@@ -1,0 +1,14 @@
+node_name: dynamixel_controller_node                  # name of the node
+
+### SUBSCRIBER AND QUEUE SIZES
+sub_rostopic_enc_1: /Encoder_1_data_stamped           # subscribed rostopic
+queue_size_sub_enc_1: 1                               # queue size of the subscriber
+
+sub_rostopic_enc_3: /Encoder_3_data_stamped            # subscribed rostopic
+queue_size_sub_enc_3: 1                                # queue size of the subscriber
+
+pub_rostopic_command_1: /tilt_controller_1/command     # published rostopic
+queue_size_pub_command_1: 1                            # queue size of the publisher
+
+pub_rostopic_command_3: /tilt_controller_3/command     # published rostopic
+queue_size_pub_command_3: 1                            # queue size of the publisher

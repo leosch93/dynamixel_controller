@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Launch catkinpkg_framework node -->
+  <node pkg="dynamixel_controller" name="dynamixel_controller"
+        type="dynamixel_controller" clear_params="true" output="screen" />
+
+  <!-- Launch rviz -->
+  <!--<node name="rviz_node" pkg="rviz" type="rviz" /-->
+
+  <!-- Include rosparam yaml files -->
+  <!--<rosparam command="load" file="$(find dynamixel_controller)/parameter/parameter_bag.yaml" />-->
+
+  <!-- Include other files -->
+  <!--param name="object_files_path" type="str" value="$(find dynamixel_controller)/object_files.txt" /-->
+
+</launch>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>dynamixel_controller</name>
+  <version>0.0.1</version>
+  <description>
+    This package processes the values of the Encoder. Then the adjusting command values are send to the Dynamixel servo
+  </description>
+
+  <maintainer email="lschai@student.ethz.ch">Leonard Schai</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>roslib</depend>
+
+</package>
