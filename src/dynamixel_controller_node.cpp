@@ -3,19 +3,6 @@
 //
 
 #include "dynamixel_controller/controller_processor.h"
-//////////////////////
-#include <ros/ros.h>
-
-#include <dynamic_reconfigure/server.h>
-#include <dynamixel_controller/paramConfig.h>
-
-void callback(dynamixel_controller::paramConfig &config, uint32_t level) {
-  ROS_INFO("Reconfigure Request: %f %f",
-            config.double_param_1,
-            config.double_param_3);
-}
-////////////////////////////////////
-
 
 namespace controller {
 
@@ -56,16 +43,6 @@ int main (int argc, char** argv)
 
   // Relative path to package
   std::string path = ros::package::getPath("dynamixel_controller");
-
-
-  // Dynamic reconfigure
-  dynamic_reconfigure::Server<dynamixel_controller::paramConfig> server;
-  dynamic_reconfigure::Server<dynamixel_controller::paramConfig>::CallbackType f;
-
-  f = boost::bind(&callback, _1, _2);
-  server.setCallback(f);
-
-
 
   // Spin
   ros::spin ();

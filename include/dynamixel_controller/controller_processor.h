@@ -18,6 +18,9 @@
 
 #include "dynamixel_controller/parameter/parameter_bag.h"
 
+#include <dynamic_reconfigure/server.h>
+#include <dynamixel_controller/controllerConfig.h>
+
 namespace controller {
 
 // Default values
@@ -54,7 +57,10 @@ class ControllerProcessor {
    * \brief Callback for the image.
    * @param [in] img_msg Ros message storing the image data.
    */
-  void CallbackImg(const geometry_msgs::PointStamped& pt_s);
+  void CallbackEnc1(const geometry_msgs::PointStamped& pt_s);
+  void CallbackEnc3(const geometry_msgs::PointStamped& pt_s);
+
+  void ConfigCallback(dynamixel_controller::controllerConfig &config, uint32_t level);
 
  private:
   /** \brief Ros NodeHandle. */
@@ -75,6 +81,9 @@ class ControllerProcessor {
   ros::Publisher pub_cmd_1_;
   ros::Publisher pub_cmd_3_;
 
+
+  // Dynamic reconfigure
+  dynamic_reconfigure::Server<dynamixel_controller::controllerConfig> server_;
 };
 
 } // namespace controller
