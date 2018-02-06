@@ -18,19 +18,18 @@
 
 #include "dynamixel_controller/parameter/parameter_bag.h"
 
-
-
-
 namespace controller {
 
 // Default values
-static const std::string kDefaultImageSubTopic   = "/camX/image_raw";
-static const std::string kDefaultCamSubTopic     = "/camera_info";
-static const std::string kDefaultObjectsPubTopic = "detection_result";
+static const std::string kDefaultSubTopic_1   = "/default_sub_1";
+static const std::string kDefaultSubTopic_3     = "/default_sub_3";
+static const std::string kDefaultObjectsPubTopic_1 = "/default_pub1";
+static const std::string kDefaultObjectsPubTopic_3 = "/default_pub3";
 
-static constexpr int kDefaultImageSubQueueSize   = 1;
-static constexpr int kDefaultCamSubQueueSize     = 1;
-static constexpr int kDefaultObjectsPubQueueSize = 500;
+static constexpr int kDefaultSubQueueSize_1   = 1;
+static constexpr int kDefaultSubQueueSize_3     = 1;
+static constexpr int kDefaultObjectsPubQueueSize_1 = 1;
+static constexpr int kDefaultObjectsPubQueueSize_3 = 1;
 
 /**
  * \brief Processor which organises the subscription and publishing of the data.
@@ -55,7 +54,7 @@ class ControllerProcessor {
    * \brief Callback for the image.
    * @param [in] img_msg Ros message storing the image data.
    */
-  void CallbackImg(const sensor_msgs::ImageConstPtr& a_image_msg);
+  void CallbackImg(const geometry_msgs::PointStamped& pt_s);
 
  private:
   /** \brief Ros NodeHandle. */

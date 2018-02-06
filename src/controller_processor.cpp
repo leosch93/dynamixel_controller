@@ -31,8 +31,10 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
       parameter_.queue_size_pub_command_3);
 }
 
-void ControllerProcessor::CallbackImg(const sensor_msgs::ImageConstPtr &im_msg) {
-  ROS_DEBUG("Image received!");
+void ControllerProcessor::CallbackImg(const geometry_msgs::PointStamped &pt_s) {
+  ROS_DEBUG("Received message form encoder");
+
+
 }
 
 } // namespace controller
