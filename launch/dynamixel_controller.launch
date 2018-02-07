@@ -8,6 +8,9 @@
   <!-- Launch rviz -->
   <!--<node name="rviz_node" pkg="rviz" type="rviz" /-->
 
+  <!-- Launch rqt -->
+  <node pkg="rqt_gui" type="rqt_gui" name="rqt_gui" args="--perspective-file $(find dynamixel_controller)/rqt/dyn_reconfig.perspective" />
+
   <!-- Include rosparam yaml files -->
   <rosparam command="load" file="$(find dynamixel_controller)/parameter/parameter_bag.yaml" />
 

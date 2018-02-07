@@ -41,18 +41,44 @@ void ControllerProcessor::ConfigCallback(
             config.double_param_1,
             config.double_param_3);
 
+            std_msgs::Float64 testangle;
+            testangle.data = 2.0;
+            pub_cmd_1.Publish(testangle);
+
+
             // 1) Parameter empfangen und local parameter zuweisen
             // 2) Publish and pub_cmd_1
 }
 
-void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s) {
+void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1) {
   ROS_DEBUG("Received message form encoder 1");
+
+  //float testmessage = pt_s_1->point_out.point.x;
+  float pulsewidth_e1 = pt_s_1.point.x;
+  float period_e1 = pt_s_1.point.y;
+  float dutycycle_e1 = pt_s_1.point.z;
+  float uc = 1000000;
+
+  float angle_deg_a1 = ((pulsewidth_e1*uc*4098/(period_e1*uc))-1)*360/4096;
+
+  ROS_INFO("Received message form encoder 1: [%f]",angle_deg_a1);
+
+
 
 }
 
-void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s) {
+void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3) {
   ROS_DEBUG("Received message form encoder 3");
-  
+
+  float pulsewidth_e3 = pt_s_3.point.x;
+  float period_e3 = pt_s_3.point.y;
+  float dutycycle_e3 = pt_s_3.point.z;
+  float uc = 1000000;
+
+  float angle_deg_a3 = ((pulsewidth_e3*uc*4098/(period_e3*uc))-1)*360/4096;
+
+  ROS_INFO("Received message form encoder 3: [%f]",angle_deg_a3);
+
 }
 
 
