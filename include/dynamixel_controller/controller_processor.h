@@ -27,11 +27,13 @@ namespace controller {
 static const std::string kDefaultSubTopic_1   = "/default_sub_1";
 static const std::string kDefaultSubTopic_3     = "/default_sub_3";
 static const std::string kDefaultObjectsPubTopic_1 = "/default_pub1";
+static const std::string kDefaultObjectsPubTopic_2 = "/default_pub2";
 static const std::string kDefaultObjectsPubTopic_3 = "/default_pub3";
 
 static constexpr int kDefaultSubQueueSize_1   = 1;
 static constexpr int kDefaultSubQueueSize_3     = 1;
 static constexpr int kDefaultObjectsPubQueueSize_1 = 1;
+static constexpr int kDefaultObjectsPubQueueSize_2 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_3 = 1;
 
 /**
@@ -79,6 +81,7 @@ class ControllerProcessor {
 
   /** \brief Ros Publisher for the objects. */
   ros::Publisher pub_cmd_1_;
+  ros::Publisher pub_cmd_2_;
   ros::Publisher pub_cmd_3_;
 
 

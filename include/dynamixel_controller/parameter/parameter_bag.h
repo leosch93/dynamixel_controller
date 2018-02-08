@@ -38,6 +38,12 @@ struct ParameterBag {
   int queue_size_pub_command_1;
 
   /** Published rostopic for the dynamixel. */
+  std::string pub_rostopic_command_2;
+
+  /** Queue size for the rostopic publisher. */
+  int queue_size_pub_command_2;
+
+  /** Published rostopic for the dynamixel. */
   std::string pub_rostopic_command_3;
 
   /** Queue size for the rostopic publisher. */

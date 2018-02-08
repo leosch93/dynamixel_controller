@@ -10,5 +10,8 @@ queue_size_sub_enc_3: 1                                # queue size of the subsc
 pub_rostopic_command_1: /tilt_controller_1/command     # published rostopic
 queue_size_pub_command_1: 1                            # queue size of the publisher
 
+pub_rostopic_command_2: /tilt_controller_2/command     # published rostopic
+queue_size_pub_command_2: 1                            # queue size of the publisher
+
 pub_rostopic_command_3: /tilt_controller_3/command     # published rostopic
 queue_size_pub_command_3: 1                            # queue size of the publisher

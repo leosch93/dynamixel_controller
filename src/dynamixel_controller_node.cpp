@@ -20,6 +20,10 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
            kDefaultObjectsPubTopic_1);
   nh.param("queue_size_pub_command_1", parameter->queue_size_pub_command_1,
            kDefaultObjectsPubQueueSize_1);
+  nh.param("pub_rostopic_command_2", parameter->pub_rostopic_command_2,
+           kDefaultObjectsPubTopic_2);
+  nh.param("queue_size_pub_command_2", parameter->queue_size_pub_command_2,
+          kDefaultObjectsPubQueueSize_2);
   nh.param("pub_rostopic_command_3", parameter->pub_rostopic_command_3,
            kDefaultObjectsPubTopic_3);
   nh.param("queue_size_pub_command_3", parameter->queue_size_pub_command_3,

@@ -26,6 +26,10 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
       parameter_.pub_rostopic_command_1,
       parameter_.queue_size_pub_command_1);
 
+  pub_cmd_2_ = nh_.advertise<std_msgs::Float64>(
+      parameter_.pub_rostopic_command_2,
+      parameter_.queue_size_pub_command_2);
+
   pub_cmd_3_ = nh_.advertise<std_msgs::Float64>(
       parameter_.pub_rostopic_command_3,
       parameter_.queue_size_pub_command_3);
@@ -34,22 +38,26 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
   f = boost::bind(&ControllerProcessor::ConfigCallback, this, _1, _2);
   server_.setCallback(f);
 }
+// 2 arguments correct?
 
 void ControllerProcessor::ConfigCallback(
   dynamixel_controller::controllerConfig &config, uint32_t level) {
-  ROS_INFO("Reconfigure Request: %f %f",
+  ROS_INFO("Reconfigure Request: %f %f %f",
             config.double_param_1,
+            config.double_param_2,
             config.double_param_3);
 
 
-
-            // TO DO use pi
             std_msgs::Float64 testangle_1;
-            testangle_1.data = config.double_param_1/360*2*3.1415;
+            testangle_1.data = config.double_param_1/360*2*M_PI;
             pub_cmd_1_.publish(testangle_1);
 
+            std_msgs::Float64 testangle_2;
+            testangle_2.data = config.double_param_2/360*2*M_PI;
+            pub_cmd_2_.publish(testangle_2);
+
             std_msgs::Float64 testangle_3;
-            testangle_3.data = config.double_param_3/360*2*3.1415;
+            testangle_3.data = config.double_param_3/360*2*M_PI;
             pub_cmd_3_.publish(testangle_3);
 
 
@@ -93,7 +101,7 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
   std_msgs::Float64 angle_deg_msg;
   angle_deg_msg.data = angle_deg_a3;
 
-  pub_cmd_3_.publish(angle_deg_msg);
+  //pub_cmd_3_.publish(angle_deg_msg);
 
   ROS_INFO("Received message form encoder 3: [%f]",angle_deg_a3);
 
