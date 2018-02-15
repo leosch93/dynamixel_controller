@@ -78,15 +78,22 @@ class ControllerProcessor {
   ros::Subscriber sub_enc_1_;
   ros::Subscriber sub_enc_3_;
 
-
   /** \brief Ros Publisher for the objects. */
   ros::Publisher pub_cmd_1_;
   ros::Publisher pub_cmd_2_;
   ros::Publisher pub_cmd_3_;
 
-
   // Dynamic reconfigure
   dynamic_reconfigure::Server<dynamixel_controller::controllerConfig> server_;
+
+  float angle_val_e1_1_{};
+  float angle_val_e1_2_{};
+  float angle_val_e1_3_{};
+
+  float angle_val_e3_1_{};
+  float angle_val_e3_2_{};
+  float angle_val_e3_3_{};
+
 };
 
 } // namespace controller

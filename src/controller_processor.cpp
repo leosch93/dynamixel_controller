@@ -38,7 +38,7 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
   f = boost::bind(&ControllerProcessor::ConfigCallback, this, _1, _2);
   server_.setCallback(f);
 }
-// 2 arguments correct?
+
 
 void ControllerProcessor::ConfigCallback(
   dynamixel_controller::controllerConfig &config, uint32_t level) {
@@ -65,6 +65,27 @@ void ControllerProcessor::ConfigCallback(
             // 2) Publish and pub_cmd_1
 }
 
+float median_n_3(float a,float b,float c)
+{
+  float median;
+
+  if ((a<=b) && (a<=c))
+  {
+    median = (b<=c) ? b : c;
+  }
+  if ((b<=a) && (b<=c))
+  {
+    median = (a<=c) ? a : c;
+  }
+  else
+  {
+    median = (a<=b) ? a : b;
+  }
+  return median;
+}
+
+
+
 void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1) {
   ROS_DEBUG("Received message form encoder 1");
 
@@ -79,17 +100,26 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
   std_msgs::Float64 angle_deg_msg;
   angle_deg_msg.data = angle_deg_a1;
 
+
+
+  angle_val_e1_3_ = angle_val_e1_2_;
+  angle_val_e1_2_ = angle_val_e1_1_;
+  angle_val_e1_1_ = angle_deg_a1;
+
+  float median_val_e1 = median_n_3(angle_val_e1_1_,angle_val_e1_2_,angle_val_e1_3_);
+
+
   // Publish
   //pub_cmd_1_.publish(angle_deg_msg);
 
-  ROS_INFO("Received message form encoder 1: [%f]",angle_deg_a1);
-
-
-
+  ROS_INFO("Received message from encoder 1: [%f]",angle_deg_a1);
+  ROS_INFO("Median message from encoder 1: [%f]",median_val_e1);
 }
 
+
+
 void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3) {
-  ROS_DEBUG("Received message form encoder 3");
+  ROS_DEBUG("Received message from encoder 3");
 
   float pulsewidth_e3 = pt_s_3.point.x;
   float period_e3 = pt_s_3.point.y;
@@ -101,9 +131,18 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
   std_msgs::Float64 angle_deg_msg;
   angle_deg_msg.data = angle_deg_a3;
 
+  angle_val_e3_3_ = angle_val_e3_2_;
+  angle_val_e3_2_ = angle_val_e3_1_;
+  angle_val_e3_1_ = angle_deg_a3;
+
+  float median_val_e3 = median_n_3(angle_val_e3_1_,angle_val_e3_2_,angle_val_e3_3_);
+
+
+  // Publish
   //pub_cmd_3_.publish(angle_deg_msg);
 
-  ROS_INFO("Received message form encoder 3: [%f]",angle_deg_a3);
+  ROS_INFO("Received message from encoder 3: [%f]",angle_deg_a3);
+  ROS_INFO("Median message from encoder 3: [%f]",median_val_e3);
 
 }
 
