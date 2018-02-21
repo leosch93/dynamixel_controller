@@ -34,6 +34,25 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
       parameter_.pub_rostopic_command_3,
       parameter_.queue_size_pub_command_3);
 
+
+
+  pub_angle_1_ = nh_.advertise<std_msgs::Float64>(
+      parameter_.pub_rostopic_1,
+      parameter_.queue_size_pub_rostopic_1);
+
+  pub_angle_3_ = nh_.advertise<std_msgs::Float64>(
+      parameter_.pub_rostopic_2,
+      parameter_.queue_size_pub_rostopic_2);
+
+  pub_angle_1_filtered_ = nh_.advertise<std_msgs::Float64>(
+      parameter_.pub_rostopic_3,
+      parameter_.queue_size_pub_rostopic_3);
+
+  pub_angle_3_filtered_ = nh_.advertise<std_msgs::Float64>(
+      parameter_.pub_rostopic_4,
+      parameter_.queue_size_pub_rostopic_4);
+
+
   dynamic_reconfigure::Server<dynamixel_controller::controllerConfig>::CallbackType f;
   f = boost::bind(&ControllerProcessor::ConfigCallback, this, _1, _2);
   server_.setCallback(f);
@@ -85,7 +104,6 @@ float median_n_3(float a,float b,float c)
 }
 
 
-
 void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1) {
   ROS_DEBUG("Received message form encoder 1");
 
@@ -110,7 +128,8 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
 
 
   // Publish
-  //pub_cmd_1_.publish(angle_deg_msg);
+  pub_angle_1_.publish(angle_deg_a1);
+  pub_angle_1_filtered_.publish(median_val_e1);
 
   ROS_INFO("Received message from encoder 1: [%f]",angle_deg_a1);
   ROS_INFO("Median message from encoder 1: [%f]",median_val_e1);
@@ -139,7 +158,9 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
 
 
   // Publish
-  //pub_cmd_3_.publish(angle_deg_msg);
+  pub_angle_3_.publish(angle_deg_a3);
+  pub_angle_3_filtered_.publish(median_val_e3);
+
 
   ROS_INFO("Received message from encoder 3: [%f]",angle_deg_a3);
   ROS_INFO("Median message from encoder 3: [%f]",median_val_e3);

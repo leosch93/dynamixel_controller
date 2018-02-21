@@ -48,6 +48,33 @@ struct ParameterBag {
 
   /** Queue size for the rostopic publisher. */
   int queue_size_pub_command_3;
+
+
+
+  /** Published rostopic for the dynamixel. */
+  std::string pub_rostopic_1;
+
+  /** Queue size for the rostopic publisher. */
+  int queue_size_pub_rostopic_1;
+
+  /** Published rostopic for the dynamixel. */
+  std::string pub_rostopic_2;
+
+  /** Queue size for the rostopic publisher. */
+  int queue_size_pub_rostopic_2;
+
+  /** Published rostopic for the dynamixel. */
+  std::string pub_rostopic_3;
+
+  /** Queue size for the rostopic publisher. */
+  int queue_size_pub_rostopic_3;
+
+  /** Published rostopic for the dynamixel. */
+  std::string pub_rostopic_4;
+
+  /** Queue size for the rostopic publisher. */
+  int queue_size_pub_rostopic_4;
+
 };
 
 } // namespace controller

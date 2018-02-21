@@ -30,11 +30,22 @@ static const std::string kDefaultObjectsPubTopic_1 = "/default_pub1";
 static const std::string kDefaultObjectsPubTopic_2 = "/default_pub2";
 static const std::string kDefaultObjectsPubTopic_3 = "/default_pub3";
 
+static const std::string kDefaultPubTopic_1 = "/default_pub1";
+static const std::string kDefaultPubTopic_2 = "/default_pub2";
+static const std::string kDefaultPubTopic_3 = "/default_pub3";
+static const std::string kDefaultPubTopic_4 = "/default_pub4";
+
+
 static constexpr int kDefaultSubQueueSize_1   = 1;
 static constexpr int kDefaultSubQueueSize_3     = 1;
 static constexpr int kDefaultObjectsPubQueueSize_1 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_2 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_3 = 1;
+
+static constexpr int kDefaultPubQueueSize_1 = 1;
+static constexpr int kDefaultPubQueueSize_2 = 1;
+static constexpr int kDefaultPubQueueSize_3 = 1;
+static constexpr int kDefaultPubQueueSize_4 = 1;
 
 /**
  * \brief Processor which organises the subscription and publishing of the data.
@@ -82,6 +93,12 @@ class ControllerProcessor {
   ros::Publisher pub_cmd_1_;
   ros::Publisher pub_cmd_2_;
   ros::Publisher pub_cmd_3_;
+
+  /** \brief Ros Publisher for the objects. */
+  ros::Publisher pub_angle_1_;
+  ros::Publisher pub_angle_3_;
+  ros::Publisher pub_angle_1_filtered_;
+  ros::Publisher pub_angle_3_filtered_;
 
   // Dynamic reconfigure
   dynamic_reconfigure::Server<dynamixel_controller::controllerConfig> server_;

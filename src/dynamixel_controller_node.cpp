@@ -28,6 +28,25 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
            kDefaultObjectsPubTopic_3);
   nh.param("queue_size_pub_command_3", parameter->queue_size_pub_command_3,
            kDefaultObjectsPubQueueSize_3);
+
+  nh.param("pub_rostopic_1", parameter->pub_rostopic_1,
+             kDefaultPubTopic_1);
+  nh.param("pub_rostopic_2", parameter->pub_rostopic_2,
+            kDefaultPubTopic_2);
+  nh.param("pub_rostopic_3", parameter->pub_rostopic_3,
+             kDefaultPubTopic_3);
+  nh.param("pub_rostopic_4", parameter->pub_rostopic_4,
+            kDefaultPubTopic_4);
+
+
+  nh.param("queue_size_pub_rostopic_1", parameter->queue_size_pub_rostopic_1,
+            kDefaultPubQueueSize_1);
+  nh.param("queue_size_pub_rostopic_2", parameter->queue_size_pub_rostopic_2,
+           kDefaultPubQueueSize_2);
+  nh.param("queue_size_pub_rostopic_3", parameter->queue_size_pub_rostopic_3,
+            kDefaultPubQueueSize_3);
+  nh.param("queue_size_pub_rostopic_4", parameter->queue_size_pub_rostopic_4,
+           kDefaultPubQueueSize_4);
 }
 
 } // namespace controller
