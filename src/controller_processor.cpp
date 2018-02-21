@@ -115,8 +115,6 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
 
   float angle_deg_a1 = ((pulsewidth_e1*uc*4098/(period_e1*uc))-1)*360/4096;
 
-  std_msgs::Float64 angle_deg_msg;
-  angle_deg_msg.data = angle_deg_a1;
 
 
 
@@ -126,13 +124,19 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
 
   float median_val_e1 = median_n_3(angle_val_e1_1_,angle_val_e1_2_,angle_val_e1_3_);
 
+  // Create message from value
+  std_msgs::Float64 angle_1_deg_msg;
+  std_msgs::Float64 angle_1_deg_filtered_msg;
+
+  angle_1_deg_msg.data = angle_deg_a1;
+  angle_1_deg_filtered_msg.data = median_val_e1;
 
   // Publish
-  pub_angle_1_.publish(angle_deg_a1);
-  pub_angle_1_filtered_.publish(median_val_e1);
+  pub_angle_1_.publish(angle_1_deg_msg);
+  pub_angle_1_filtered_.publish(angle_1_deg_filtered_msg);
 
-  ROS_INFO("Received message from encoder 1: [%f]",angle_deg_a1);
-  ROS_INFO("Median message from encoder 1: [%f]",median_val_e1);
+  //ROS_INFO("Received message from encoder 1: [%f]",angle_deg_a1);
+  //ROS_INFO("Median message from encoder 1: [%f]",median_val_e1);
 }
 
 
@@ -147,8 +151,6 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
 
   float angle_deg_a3 = ((pulsewidth_e3*uc*4098/(period_e3*uc))-1)*360/4096;
 
-  std_msgs::Float64 angle_deg_msg;
-  angle_deg_msg.data = angle_deg_a3;
 
   angle_val_e3_3_ = angle_val_e3_2_;
   angle_val_e3_2_ = angle_val_e3_1_;
@@ -156,14 +158,22 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
 
   float median_val_e3 = median_n_3(angle_val_e3_1_,angle_val_e3_2_,angle_val_e3_3_);
 
+  // Create message from value
+
+  std_msgs::Float64 angle_3_deg_msg;
+  std_msgs::Float64 angle_3_deg_filtered_msg;
+
+  angle_3_deg_msg.data = angle_deg_a3;
+  angle_3_deg_filtered_msg.data = median_val_e3;
+
 
   // Publish
-  pub_angle_3_.publish(angle_deg_a3);
-  pub_angle_3_filtered_.publish(median_val_e3);
+  pub_angle_3_.publish(angle_3_deg_msg);
+  pub_angle_3_filtered_.publish(angle_3_deg_filtered_msg);
 
 
-  ROS_INFO("Received message from encoder 3: [%f]",angle_deg_a3);
-  ROS_INFO("Median message from encoder 3: [%f]",median_val_e3);
+  //ROS_INFO("Received message from encoder 3: [%f]",angle_deg_a3);
+  //ROS_INFO("Median message from encoder 3: [%f]",median_val_e3);
 
 }
 
