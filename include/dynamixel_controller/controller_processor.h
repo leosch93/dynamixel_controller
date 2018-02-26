@@ -111,6 +111,9 @@ class ControllerProcessor {
   float angle_val_e3_2_{};
   float angle_val_e3_3_{};
 
+  ros::Time start_;
+  bool only_once_ = false;
+
 };
 
 } // namespace controller

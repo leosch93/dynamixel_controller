@@ -1,5 +1,5 @@
 //
-// Created by marius on 16.04.16.
+// Created by Leo on 16.02.17.
 //
 
 #include "dynamixel_controller/controller_processor.h"
@@ -80,24 +80,18 @@ void ControllerProcessor::ConfigCallback(
             pub_cmd_3_.publish(testangle_3);
 
 
-            // 1) Parameter empfangen und local parameter zuweisen
-            // 2) Publish and pub_cmd_1
+
 }
 
 float median_n_3(float a,float b,float c)
 {
   float median;
 
-  if ((a<=b) && (a<=c))
-  {
+  if ((a<=b) && (a<=c))  {
     median = (b<=c) ? b : c;
-  }
-  if ((b<=a) && (b<=c))
-  {
+  } else if ((b<=a) && (b<=c)) {
     median = (a<=c) ? a : c;
-  }
-  else
-  {
+  } else {
     median = (a<=b) ? a : b;
   }
   return median;
@@ -107,6 +101,10 @@ float median_n_3(float a,float b,float c)
 void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1) {
   ROS_DEBUG("Received message form encoder 1");
 
+  if (!only_once_) {
+    start_ = ros::Time::now();
+    only_once_ = true;
+  }
 
   float pulsewidth_e1 = pt_s_1.point.x;
   float period_e1 = pt_s_1.point.y;
@@ -135,6 +133,11 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
   pub_angle_1_.publish(angle_1_deg_msg);
   pub_angle_1_filtered_.publish(angle_1_deg_filtered_msg);
 
+  std::cout << pt_s_1.header.stamp - start_ << ": "
+  << angle_val_e1_3_ << " | "
+  << angle_val_e1_2_ << " | "
+  << angle_val_e1_1_ << ": "
+  << median_val_e1 << std::endl;
   //ROS_INFO("Received message from encoder 1: [%f]",angle_deg_a1);
   //ROS_INFO("Median message from encoder 1: [%f]",median_val_e1);
 }
