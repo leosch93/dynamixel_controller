@@ -61,7 +61,7 @@ int main (int argc, char** argv)
   controller::ParameterBag parameter;
   controller::InitializeParameters(nh, &parameter);
 
-  // Construct class detection_processor with NodeHandle and parameter structure
+  // Construct class controller_processor with NodeHandle and parameter structure
   controller::ControllerProcessor controller(nh, parameter);
 
   // Relative path to package

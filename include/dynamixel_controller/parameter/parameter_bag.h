@@ -1,5 +1,5 @@
 //
-// Created by marius on 16.04.16.
+// Created by Leo on 16.02.16.
 //
 
 #ifndef DYNAMIXEL_CONTROLLER_PARAMETER_BAG_H

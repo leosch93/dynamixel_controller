@@ -5,8 +5,6 @@ The node then publishes the correcting commands to the Dynamixel servo.
 
 
 
-
-
 ## Parameters
 In the parameter file the different topics are specified
 

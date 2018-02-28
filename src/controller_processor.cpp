@@ -8,8 +8,8 @@ namespace controller {
 
 ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
                                          const ParameterBag& params_bag):
-    nh_(nodehandle),
-    parameter_(params_bag) {
+  nh_(nodehandle),
+  parameter_(params_bag) {
   ROS_DEBUG("Controller Processor started!");
 
   // Create ROS subscriber
@@ -22,6 +22,8 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
                           &ControllerProcessor::CallbackEnc3, this);
 
   // Create ROS publisher
+
+  // Commands
   pub_cmd_1_ = nh_.advertise<std_msgs::Float64>(
       parameter_.pub_rostopic_command_1,
       parameter_.queue_size_pub_command_1);
@@ -35,7 +37,7 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
       parameter_.queue_size_pub_command_3);
 
 
-
+  // Amgles
   pub_angle_1_ = nh_.advertise<std_msgs::Float64>(
       parameter_.pub_rostopic_1,
       parameter_.queue_size_pub_rostopic_1);
@@ -59,6 +61,7 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
 }
 
 
+// Callback for dynamic reconfigure
 void ControllerProcessor::ConfigCallback(
   dynamixel_controller::controllerConfig &config, uint32_t level) {
   ROS_INFO("Reconfigure Request: %f %f %f",
@@ -83,6 +86,7 @@ void ControllerProcessor::ConfigCallback(
 
 }
 
+// Median filter with 3 elements
 float median_n_3(float a,float b,float c)
 {
   float median;
@@ -101,25 +105,28 @@ float median_n_3(float a,float b,float c)
 void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1) {
   ROS_DEBUG("Received message form encoder 1");
 
-  if (!only_once_) {
-    start_ = ros::Time::now();
-    only_once_ = true;
-  }
+  //if (!only_once_) {
+  //  start_ = ros::Time::now();
+  //  only_once_ = true;
+  //}
 
+  // Create valiables for subscribed values
   float pulsewidth_e1 = pt_s_1.point.x;
   float period_e1 = pt_s_1.point.y;
   float dutycycle_e1 = pt_s_1.point.z;
   float uc = 1000000;
 
+  // Calculate andle from pulsewidth
   float angle_deg_a1 = ((pulsewidth_e1*uc*4098/(period_e1*uc))-1)*360/4096;
 
 
 
-
+  // Store the last 3 angles
   angle_val_e1_3_ = angle_val_e1_2_;
   angle_val_e1_2_ = angle_val_e1_1_;
   angle_val_e1_1_ = angle_deg_a1;
 
+  // Calculate median from the last three angle values
   float median_val_e1 = median_n_3(angle_val_e1_1_,angle_val_e1_2_,angle_val_e1_3_);
 
   // Create message from value
@@ -133,11 +140,12 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
   pub_angle_1_.publish(angle_1_deg_msg);
   pub_angle_1_filtered_.publish(angle_1_deg_filtered_msg);
 
-  std::cout << pt_s_1.header.stamp - start_ << ": "
-  << angle_val_e1_3_ << " | "
-  << angle_val_e1_2_ << " | "
-  << angle_val_e1_1_ << ": "
-  << median_val_e1 << std::endl;
+  //std::cout << pt_s_1.header.stamp - start_ << ": "
+  //<< angle_val_e1_3_ << " | "
+  //<< angle_val_e1_2_ << " | "
+  //<< angle_val_e1_1_ << ": "
+  //<< median_val_e1 << std::endl;
+
   //ROS_INFO("Received message from encoder 1: [%f]",angle_deg_a1);
   //ROS_INFO("Median message from encoder 1: [%f]",median_val_e1);
 }
@@ -147,22 +155,24 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
 void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3) {
   ROS_DEBUG("Received message from encoder 3");
 
+  // Create valiables for subscribed values
   float pulsewidth_e3 = pt_s_3.point.x;
   float period_e3 = pt_s_3.point.y;
   float dutycycle_e3 = pt_s_3.point.z;
   float uc = 1000000;
 
+  // Calculate andle from pulsewidth
   float angle_deg_a3 = ((pulsewidth_e3*uc*4098/(period_e3*uc))-1)*360/4096;
 
-
+  // Store the last 3 angles
   angle_val_e3_3_ = angle_val_e3_2_;
   angle_val_e3_2_ = angle_val_e3_1_;
   angle_val_e3_1_ = angle_deg_a3;
 
+  // Calculate median from the last three angle values
   float median_val_e3 = median_n_3(angle_val_e3_1_,angle_val_e3_2_,angle_val_e3_3_);
 
   // Create message from value
-
   std_msgs::Float64 angle_3_deg_msg;
   std_msgs::Float64 angle_3_deg_filtered_msg;
 

@@ -3,7 +3,9 @@
   <name>dynamixel_controller</name>
   <version>0.0.1</version>
   <description>
-    This package processes the values of the Encoder. Then the adjusting command values are send to the Dynamixel servo
+    This package processes the values of the encoder and calculates an angle.
+    After filtering and offset correcting the signal, a force estimate is calculated.
+    In the end, the adjusting command values are send to the Dynamixel servo to exert a desired force.
   </description>
 
   <maintainer email="lschai@student.ethz.ch">Leonard Schai</maintainer>

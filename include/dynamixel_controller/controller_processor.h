@@ -1,5 +1,5 @@
 //
-// Created by marius on 16.04.16.
+// Created by Leo on 16.02.16.
 //
 
 #ifndef DYNAMIXEL_CONTROLLER_CONTROLLER_PROCESSOR_H
@@ -67,8 +67,8 @@ class ControllerProcessor {
   virtual ~ControllerProcessor() = default;
 
   /**
-   * \brief Callback for the image.
-   * @param [in] img_msg Ros message storing the image data.
+   * \brief Callback for the encoder data.
+   * @param [in] img_msg Ros message storing the encoder data.
    */
   void CallbackEnc1(const geometry_msgs::PointStamped& pt_s);
   void CallbackEnc3(const geometry_msgs::PointStamped& pt_s);
@@ -85,16 +85,16 @@ class ControllerProcessor {
    */
   ParameterBag parameter_;
 
-  /** \brief Ros Subscriber for the camera. */
+  /** \brief Ros Subscriber for the encoder. */
   ros::Subscriber sub_enc_1_;
   ros::Subscriber sub_enc_3_;
 
-  /** \brief Ros Publisher for the objects. */
+  /** \brief Ros Publisher for the commands. */
   ros::Publisher pub_cmd_1_;
   ros::Publisher pub_cmd_2_;
   ros::Publisher pub_cmd_3_;
 
-  /** \brief Ros Publisher for the objects. */
+  /** \brief Ros Publisher for the calculated angles. */
   ros::Publisher pub_angle_1_;
   ros::Publisher pub_angle_3_;
   ros::Publisher pub_angle_1_filtered_;
@@ -111,8 +111,8 @@ class ControllerProcessor {
   float angle_val_e3_2_{};
   float angle_val_e3_3_{};
 
-  ros::Time start_;
-  bool only_once_ = false;
+  //ros::Time start_;
+  //bool only_once_ = false;
 
 };
 
