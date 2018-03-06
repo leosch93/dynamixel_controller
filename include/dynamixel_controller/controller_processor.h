@@ -79,8 +79,8 @@ class ControllerProcessor {
    * \brief Callback for the encoder data.
    * @param [in] img_msg Ros message storing the encoder data.
    */
-  void CallbackEnc1(const geometry_msgs::PointStamped& pt_s);
-  void CallbackEnc3(const geometry_msgs::PointStamped& pt_s);
+  void CallbackEnc1(const geometry_msgs::PointStamped& pt_s_1);
+  void CallbackEnc3(const geometry_msgs::PointStamped& pt_s_3);
 
   void CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1);
   void CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3);
@@ -116,6 +116,20 @@ class ControllerProcessor {
   ros::Publisher pub_angle_1_filtered_;
   ros::Publisher pub_angle_3_filtered_;
 
+ /** Global variables */
+  float encoder_angle_1_initial_{};
+  float encoder_angle_3_initial_{};
+
+  float dynam_state_1_initial_{};
+  float dynam_state_3_initial_{};
+
+  float offset_angle_a_1_{};
+  float offset_angle_a_3_{};
+
+  float enc_1_angle_filt_offset_{};
+  float enc_3_angle_filt_offset_{};
+
+
   // Dynamic reconfigure
   dynamic_reconfigure::Server<dynamixel_controller::controllerConfig> server_;
 
@@ -128,7 +142,18 @@ class ControllerProcessor {
   float angle_val_e3_3_{};
 
   //ros::Time start_;
-  //bool only_once_ = false;
+  bool only_once_enc_1_1_ = true;
+  bool only_once_enc_1_2_ = true;
+  bool only_once_enc_1_3_ = true;
+
+  bool only_once_enc_3_1_ = true;
+  bool only_once_enc_3_2_ = true;
+  bool only_once_enc_3_3_ = true;
+
+
+  bool only_once_dyn_1_ = true;
+  bool only_once_dyn_3_ = true;
+
 
 };
 
