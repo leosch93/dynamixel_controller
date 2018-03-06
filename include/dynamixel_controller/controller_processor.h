@@ -79,11 +79,14 @@ class ControllerProcessor {
    * \brief Callback for the encoder data.
    * @param [in] img_msg Ros message storing the encoder data.
    */
-  void CallbackEnc1(const geometry_msgs::PointStamped& pt_s_1);
-  void CallbackEnc3(const geometry_msgs::PointStamped& pt_s_3);
 
   void CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1);
   void CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3);
+
+  void CallbackEnc1(const geometry_msgs::PointStamped& pt_s_1);
+  void CallbackEnc3(const geometry_msgs::PointStamped& pt_s_3);
+
+
 
   void ConfigCallback(dynamixel_controller::controllerConfig &config, uint32_t level);
 
@@ -150,9 +153,12 @@ class ControllerProcessor {
   bool only_once_enc_3_2_ = true;
   bool only_once_enc_3_3_ = true;
 
+  bool offset_calculated_1 = false;
+  bool offset_calculated_3 = false;
 
   bool only_once_dyn_1_ = true;
   bool only_once_dyn_3_ = true;
+
 
 
 };

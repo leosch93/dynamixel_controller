@@ -113,6 +113,29 @@ float median_n_3(float a,float b,float c)
   return median;
 }
 
+void ControllerProcessor::CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1){
+float state_1 = dyn_state_1.current_pos;
+
+if (only_once_dyn_1_== true) {
+  dynam_state_1_initial_ = dyn_state_1.current_pos/2/M_PI*360;
+  only_once_dyn_1_ = false;
+}
+
+//ROS_INFO("Received message from dynamixel 1: [%f]",state_1);
+//ROS_INFO("Received initial value froonly_once_enc_1_m dynamixel 1: [%f]",dynam_state_1_initial_);
+}
+
+void ControllerProcessor::CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3){
+float state_3 = dyn_state_3.current_pos;
+
+if (only_once_dyn_3_ == true) {
+  dynam_state_3_initial_ = dyn_state_3.current_pos/2/M_PI*360;
+  only_once_dyn_3_ = false;
+}
+
+//ROS_INFO("Received message from dynamixel 3: [%f]",state_3/2/M_PI*360);
+//ROS_INFO("Received initial value from dynamixel 3: [%f]",dynam_state_3_initial_);
+}
 
 void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1) {
   ROS_DEBUG("Received message form encoder 1");
@@ -153,30 +176,38 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
   //pub_angle_1_filtered_.publish(angle_1_deg_filtered_msg);
 
 
-      if (only_once_enc_1_1_== true) {
+  if (offset_calculated_1 == false){
+
+      if (only_once_enc_1_1_== true){
         only_once_enc_1_1_ = false;
       }
-      else if (only_once_enc_1_2_ == true) {
+      else if (only_once_enc_1_2_ == true){
         only_once_enc_1_2_ = false;
       }
-      else {
+      else{
         encoder_angle_1_initial_ =  median_val_e1;
-        offset_angle_a_1_ = encoder_angle_1_initial_-dynam_state_1_initial_;
-        only_once_enc_1_3_ = false;
-        enc_1_angle_filt_offset_ = median_val_e1-offset_angle_a_1_;
+            if (dynam_state_1_initial_ != 0){
+              offset_angle_a_1_ = encoder_angle_1_initial_ - dynam_state_1_initial_;
+              offset_calculated_1 = true;
+            }
       }
 
-
-
-
-    //ROS_INFO("Received message from encoder 3: [%f]",angle_deg_a3);
-    //ROS_INFO("Median message from encoder 3: [%f]",median_val_e3);
+    //ROS_INFO("Received angle from encoder 3: [%f]",angle_deg_a3);
+    //ROS_INFO("Median  from encoder 3: [%f]",median_val_e3);
+    //ROS_INFO("State initial dynamixel: [%f]",dynam_state_3_initial_);
     //ROS_INFO("Received initial angle from encoder 3: [%f]",encoder_angle_3_initial_);
     //ROS_INFO("Received initial angle from dynamixel 3: [%f]",dynam_state_3_initial_);
-    //ROS_INFO("Received offset angle from encoder 3: [%f]",offset_angle_a_3_);
-    //ROS_INFO("Encoder 1 filtered and offset corrected: [%f]",enc_1_angle_filt_offset_);
+    //ROS_INFO("Offset angle from encoder 3: [%f]",offset_angle_a_3_);
+    //ROS_INFO("Encoder 3 filtered and offset corrected: [%f]",enc_3_angle_filt_offset_);
+    //ROS_INFO("----");
+    }
 
-}
+
+    enc_1_angle_filt_offset_ = median_val_e1-offset_angle_a_1_;
+    ROS_INFO("Encoder 1 filtered and offset corrected: [%f]",enc_1_angle_filt_offset_);
+
+
+} // namespace Callback 1
 
 
 
@@ -213,62 +244,40 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
   //pub_angle_3_filtered_.publish(angle_3_deg_filtered_msg);
 
 
+if (offset_calculated_3 == false){
 
-    if (only_once_enc_3_1_== true) {
+    if (only_once_enc_3_1_== true){
       only_once_enc_3_1_ = false;
-      ROS_INFO("3 false1");
     }
-    else if (only_once_enc_3_2_ == true) {
+    else if (only_once_enc_3_2_ == true){
       only_once_enc_3_2_ = false;
-      ROS_INFO("3 false2");
     }
-    else if (only_once_enc_3_3_ == true) {
+    else{
       encoder_angle_3_initial_ =  median_val_e3;
-      offset_angle_a_3_ = encoder_angle_3_initial_-dynam_state_3_initial_;
-      only_once_enc_3_3_ = false;
-      ROS_INFO("3 false3 -  write offset");
+          if (dynam_state_3_initial_ != 0){
+            offset_angle_a_3_ = encoder_angle_3_initial_ - dynam_state_3_initial_;
+            offset_calculated_3 = true;
+          }
     }
 
-    enc_3_angle_filt_offset_ = median_val_e3-offset_angle_a_3_;
-
-
-
-  ROS_INFO("Received angle from encoder 3: [%f]",angle_deg_a3);
-  ROS_INFO("Median  from encoder 3: [%f]",median_val_e3);
-  ROS_INFO("State initial dynamixel: [%f]",dynam_state_3_initial_);
+  //ROS_INFO("Received angle from encoder 3: [%f]",angle_deg_a3);
+  //ROS_INFO("Median  from encoder 3: [%f]",median_val_e3);
+  //ROS_INFO("State initial dynamixel: [%f]",dynam_state_3_initial_);
   //ROS_INFO("Received initial angle from encoder 3: [%f]",encoder_angle_3_initial_);
   //ROS_INFO("Received initial angle from dynamixel 3: [%f]",dynam_state_3_initial_);
-  ROS_INFO("Offset angle from encoder 3: [%f]",offset_angle_a_3_);
+  //ROS_INFO("Offset angle from encoder 3: [%f]",offset_angle_a_3_);
+  //ROS_INFO("Encoder 3 filtered and offset corrected: [%f]",enc_3_angle_filt_offset_);
+  //ROS_INFO("----");
+  }
+
+
+  enc_3_angle_filt_offset_ = median_val_e3-offset_angle_a_3_;
   ROS_INFO("Encoder 3 filtered and offset corrected: [%f]",enc_3_angle_filt_offset_);
-  ROS_INFO("----");
-
-}
 
 
-void ControllerProcessor::CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1){
 
-float state_1 = dyn_state_1.current_pos;
+} // namespace callback 3
 
-if (only_once_dyn_1_== true) {
-  dynam_state_1_initial_ = dyn_state_1.current_pos/2/M_PI*360;
-  only_once_dyn_1_ = false;
-}
-
-//ROS_INFO("Received message from dynamixel 1: [%f]",state_1);
-//ROS_INFO("Received initial value froonly_once_enc_1_m dynamixel 1: [%f]",dynam_state_1_initial_);
-}
-
-void ControllerProcessor::CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3){
-float state_3 = dyn_state_3.current_pos;
-
-if (only_once_dyn_3_ == true) {
-  dynam_state_3_initial_ = dyn_state_3.current_pos/2/M_PI*360;
-  only_once_dyn_3_ = false;
-}
-
-//ROS_INFO("Received message from dynamixel 3: [%f]",state_3/2/M_PI*360);
-//ROS_INFO("Received initial value from dynamixel 3: [%f]",dynam_state_3_initial_);
-}
 
 
 
