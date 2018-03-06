@@ -16,6 +16,18 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
            kDefaultSubTopic_3);
   nh.param("queue_size_sub_enc_3", parameter->queue_size_sub_enc_3,
            kDefaultSubQueueSize_3);
+
+  nh.param("sub_rostopic_dynamixel_1", parameter->sub_rostopic_dynamixel_1,
+          kDefaultSubTopic_1_dyn);
+  nh.param("queue_size_sub_dynamixel_1", parameter->queue_size_sub_dynamixel_1,
+          kDefaultSubQueueSize_1_dyn);
+  nh.param("sub_rostopic_dynamixel_3", parameter->sub_rostopic_dynamixel_3,
+          kDefaultSubTopic_3_dyn);
+  nh.param("queue_size_sub_dynamixel_3", parameter->queue_size_sub_dynamixel_3,
+          kDefaultSubQueueSize_3_dyn);
+
+
+
   nh.param("pub_rostopic_command_1", parameter->pub_rostopic_command_1,
            kDefaultObjectsPubTopic_1);
   nh.param("queue_size_pub_command_1", parameter->queue_size_pub_command_1,

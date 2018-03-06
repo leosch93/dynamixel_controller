@@ -12,6 +12,7 @@
 #include <std_msgs/Float32.h>
 #include <ros/time.h>
 #include <geometry_msgs/PointStamped.h>
+#include <dynamixel_msgs/JointState.h>
 
 #include <iostream>
 #include <vector>
@@ -26,6 +27,10 @@ namespace controller {
 // Default values
 static const std::string kDefaultSubTopic_1   = "/default_sub_1";
 static const std::string kDefaultSubTopic_3     = "/default_sub_3";
+
+static const std::string kDefaultSubTopic_1_dyn   = "/default_sub_1_dyn";
+static const std::string kDefaultSubTopic_3_dyn    = "/default_sub_3_dyn";
+
 static const std::string kDefaultObjectsPubTopic_1 = "/default_pub1";
 static const std::string kDefaultObjectsPubTopic_2 = "/default_pub2";
 static const std::string kDefaultObjectsPubTopic_3 = "/default_pub3";
@@ -37,7 +42,11 @@ static const std::string kDefaultPubTopic_4 = "/default_pub4";
 
 
 static constexpr int kDefaultSubQueueSize_1   = 1;
-static constexpr int kDefaultSubQueueSize_3     = 1;
+static constexpr int kDefaultSubQueueSize_3   = 1;
+
+static constexpr int kDefaultSubQueueSize_1_dyn  = 1;
+static constexpr int kDefaultSubQueueSize_3_dyn  = 1;
+
 static constexpr int kDefaultObjectsPubQueueSize_1 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_2 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_3 = 1;
@@ -73,6 +82,9 @@ class ControllerProcessor {
   void CallbackEnc1(const geometry_msgs::PointStamped& pt_s);
   void CallbackEnc3(const geometry_msgs::PointStamped& pt_s);
 
+  void CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1);
+  void CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3);
+
   void ConfigCallback(dynamixel_controller::controllerConfig &config, uint32_t level);
 
  private:
@@ -88,6 +100,10 @@ class ControllerProcessor {
   /** \brief Ros Subscriber for the encoder. */
   ros::Subscriber sub_enc_1_;
   ros::Subscriber sub_enc_3_;
+
+  /** \brief Ros Subscriber for the dynamixel. */
+  ros::Subscriber sub_dyn_1_;
+  ros::Subscriber sub_dyn_3_;
 
   /** \brief Ros Publisher for the commands. */
   ros::Publisher pub_cmd_1_;

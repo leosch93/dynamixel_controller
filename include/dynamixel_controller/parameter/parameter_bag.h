@@ -37,7 +37,7 @@ struct ParameterBag {
   /** Queue size for the rostopic publisher. */
   int queue_size_pub_command_1;
 
-  /** Published rostopic for the dynamixel. */
+  /** Published rostopic for the HEBI. */
   std::string pub_rostopic_command_2;
 
   /** Queue size for the rostopic publisher. */
@@ -51,29 +51,44 @@ struct ParameterBag {
 
 
 
-  /** Published rostopic for the dynamixel. */
+  /** Published rostopic angle 1. */
   std::string pub_rostopic_1;
 
   /** Queue size for the rostopic publisher. */
   int queue_size_pub_rostopic_1;
 
-  /** Published rostopic for the dynamixel. */
+  /** Published rostopic angle 3. */
   std::string pub_rostopic_2;
 
   /** Queue size for the rostopic publisher. */
   int queue_size_pub_rostopic_2;
 
-  /** Published rostopic for the dynamixel. */
+  /** Published rostopic angle 1 filtered. */
   std::string pub_rostopic_3;
 
   /** Queue size for the rostopic publisher. */
   int queue_size_pub_rostopic_3;
 
-  /** Published rostopic for the dynamixel. */
+  /** Published rostopic angle 3 filtered. */
   std::string pub_rostopic_4;
 
   /** Queue size for the rostopic publisher. */
   int queue_size_pub_rostopic_4;
+
+
+
+  /** Subscribed rostopic for the data of the internal encoder of the dynamixel 1. */
+  std::string sub_rostopic_dynamixel_1;
+
+  /** Queue size for the dynamixel rostopic subscriber. */
+  int queue_size_sub_dynamixel_1;
+
+  /** Subscribed rostopic for the data of the internal encoder of the dynamixel 3. */
+  std::string sub_rostopic_dynamixel_3;
+
+  /** Queue size for the dynamixel rostopic subscriber. */
+  int queue_size_sub_dynamixel_3;
+
 
 };
 

@@ -21,6 +21,18 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
                           parameter_.queue_size_sub_enc_3,
                           &ControllerProcessor::CallbackEnc3, this);
 
+
+  sub_dyn_1_ = nh_.subscribe(parameter_.sub_rostopic_dynamixel_1,
+                            parameter_.queue_size_sub_dynamixel_1,
+                            &ControllerProcessor::CallbackDyn1,this);
+
+  sub_dyn_3_ = nh_.subscribe(parameter_.sub_rostopic_dynamixel_3,
+                            parameter_.queue_size_sub_dynamixel_3,
+                            &ControllerProcessor::CallbackDyn3,this);
+
+
+
+
   // Create ROS publisher
 
   // Commands
@@ -189,6 +201,19 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
   //ROS_INFO("Median message from encoder 3: [%f]",median_val_e3);
 
 }
+
+
+void ControllerProcessor::CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1){
+
+float state_1 = dyn_state_1.current_pos;
+ROS_INFO("Received message from dynamixel 1: [%f]",state_1);
+}
+
+void ControllerProcessor::CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3){
+float state_3 = dyn_state_3.current_pos;
+ROS_INFO("Received message from dynamixel 3: [%f]",state_3);
+}
+
 
 
 } // namespace controller
