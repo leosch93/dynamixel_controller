@@ -116,8 +116,8 @@ class ControllerProcessor {
   /** \brief Ros Publisher for the calculated angles. */
   ros::Publisher pub_angle_1_;
   ros::Publisher pub_angle_3_;
-  ros::Publisher pub_angle_1_filtered_;
-  ros::Publisher pub_angle_3_filtered_;
+  ros::Publisher pub_angle_1_filtered_o_;
+  ros::Publisher pub_angle_3_filtered_o_;
 
  /** Global variables */
   float encoder_angle_1_initial_{};
@@ -158,6 +158,19 @@ class ControllerProcessor {
 
   bool only_once_dyn_1_ = true;
   bool only_once_dyn_3_ = true;
+
+  float dynam_angle_1_{};
+  float dynam_angle_3_{};
+
+  float angle_diff_a_1_{};
+  float angle_diff_a_3_{};
+
+  // FEM simulation values
+  float k_1_ = 0.5; //Nm/deg
+  float k_3_ = 0.5; //Nm/deg
+
+  float t_est_1_{};
+  float t_est_3_{};
 
 
 

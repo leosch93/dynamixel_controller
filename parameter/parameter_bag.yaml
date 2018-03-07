@@ -8,7 +8,7 @@ sub_rostopic_enc_3: /Encoder_3_data_stamped            # subscribed rostopic
 queue_size_sub_enc_3: 1                                # queue size of the subscriber
 
 sub_rostopic_dynamixel_1: /tilt_controller_1/state           # subscribed rostopic
-queue_size_sub_dynamixel_1: 1                               # queue size of the subscriber
+queue_size_sub_dynamixel_1: 1                              # queue size of the subscriber
 
 sub_rostopic_dynamixel_3: /tilt_controller_3/state           # subscribed rostopic
 queue_size_sub_dynamixel_3: 1                                # queue size of the subscriber
@@ -25,14 +25,14 @@ pub_rostopic_command_3: /tilt_controller_3/command     # published rostopic
 queue_size_pub_command_3: 1                            # queue size of the publisher
 
 
-pub_rostopic_1: /encoder_1/angle                       # published rostopic
-queue_size_pub_rostopic_1: 100                            # queue size of the publisher
+pub_rostopic_1: /actuator_1/torque_estimate                       # published rostopic
+queue_size_pub_rostopic_1: 1                            # queue size of the publisher
 
-pub_rostopic_2: /encoder_3/angle                       # published rostopic
-queue_size_pub_rostopic_2: 100                           # queue size of the publisher
+pub_rostopic_2: /actuator_3/torque_estimate                       # published rostopic
+queue_size_pub_rostopic_2: 1                           # queue size of the publisher
 
-pub_rostopic_3: /encoder_1/angle_filtered              # published rostopic
-queue_size_pub_rostopic_3: 100                            # queue size of the publisher
+pub_rostopic_3: /encoder_1/angle_filtered_offsetcorrected # published rostopic
+queue_size_pub_rostopic_3: 1                            # queue size of the publisher
 
-pub_rostopic_4: /encoder_3/angle_filtered              # published rostopic
-queue_size_pub_rostopic_4: 100                            # queue size of the publisher
+pub_rostopic_4: /encoder_3/angle_filtered_offsetcorrected # published rostopic
+queue_size_pub_rostopic_4: 1                            # queue size of the publisher

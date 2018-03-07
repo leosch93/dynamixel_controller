@@ -58,11 +58,11 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
       parameter_.pub_rostopic_2,
       parameter_.queue_size_pub_rostopic_2);
 
-  pub_angle_1_filtered_ = nh_.advertise<std_msgs::Float64>(
+  pub_angle_1_filtered_o_ = nh_.advertise<std_msgs::Float64>(
       parameter_.pub_rostopic_3,
       parameter_.queue_size_pub_rostopic_3);
 
-  pub_angle_3_filtered_ = nh_.advertise<std_msgs::Float64>(
+  pub_angle_3_filtered_o_ = nh_.advertise<std_msgs::Float64>(
       parameter_.pub_rostopic_4,
       parameter_.queue_size_pub_rostopic_4);
 
@@ -114,25 +114,25 @@ float median_n_3(float a,float b,float c)
 }
 
 void ControllerProcessor::CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1){
-float state_1 = dyn_state_1.current_pos;
+//float state_1 = dyn_state_1.current_pos;
 
 if (only_once_dyn_1_== true) {
   dynam_state_1_initial_ = dyn_state_1.current_pos/2/M_PI*360;
   only_once_dyn_1_ = false;
 }
-
+dynam_angle_1_ = dyn_state_1.current_pos/2/M_PI*360;
 //ROS_INFO("Received message from dynamixel 1: [%f]",state_1);
 //ROS_INFO("Received initial value froonly_once_enc_1_m dynamixel 1: [%f]",dynam_state_1_initial_);
 }
 
 void ControllerProcessor::CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3){
-float state_3 = dyn_state_3.current_pos;
+//float state_3 = dyn_state_3.current_pos;
 
 if (only_once_dyn_3_ == true) {
   dynam_state_3_initial_ = dyn_state_3.current_pos/2/M_PI*360;
   only_once_dyn_3_ = false;
 }
-
+dynam_angle_3_ = dyn_state_3.current_pos/2/M_PI*360;
 //ROS_INFO("Received message from dynamixel 3: [%f]",state_3/2/M_PI*360);
 //ROS_INFO("Received initial value from dynamixel 3: [%f]",dynam_state_3_initial_);
 }
@@ -164,16 +164,6 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
   // Calculate median from the last three angle values
   float median_val_e1 = median_n_3(angle_val_e1_1_,angle_val_e1_2_,angle_val_e1_3_);
 
-  // Create message from value
-  std_msgs::Float64 angle_1_deg_msg;
-  std_msgs::Float64 angle_1_deg_filtered_msg;
-
-  angle_1_deg_msg.data = angle_deg_a1;
-  angle_1_deg_filtered_msg.data = median_val_e1;
-
-  // Publish
-  //pub_angle_1_.publish(angle_1_deg_msg);
-  //pub_angle_1_filtered_.publish(angle_1_deg_filtered_msg);
 
 
   if (offset_calculated_1 == false){
@@ -204,7 +194,24 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
 
 
     enc_1_angle_filt_offset_ = median_val_e1-offset_angle_a_1_;
-    ROS_INFO("Encoder 1 filtered and offset corrected: [%f]",enc_1_angle_filt_offset_);
+    //ROS_INFO("Encoder 1 filtered and offset corrected: [%f]",enc_1_angle_filt_offset_);
+
+    // Calculate angle difference
+    angle_diff_a_1_ = enc_1_angle_filt_offset_-dynam_angle_1_;
+
+    // Calculate torque estimate
+    t_est_1_ = angle_diff_a_1_*k_1_;
+
+    // Create message from value
+    std_msgs::Float64 t_est_1_msg;
+    std_msgs::Float64 angle_1_deg_filtered_o_msg;
+
+    t_est_1_msg.data = t_est_1_;
+    angle_1_deg_filtered_o_msg.data = enc_1_angle_filt_offset_;
+
+    // Publish
+    pub_angle_1_.publish(t_est_1_msg);
+    pub_angle_1_filtered_o_.publish(angle_1_deg_filtered_o_msg);
 
 
 } // namespace Callback 1
@@ -231,17 +238,9 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
   // Calculate median from the last three angle values
   float median_val_e3 = median_n_3(angle_val_e3_1_,angle_val_e3_2_,angle_val_e3_3_);
 
-  // Create message from value
-  std_msgs::Float64 angle_3_deg_msg;
-  std_msgs::Float64 angle_3_deg_filtered_msg;
-
-  angle_3_deg_msg.data = angle_deg_a3;
-  angle_3_deg_filtered_msg.data = median_val_e3;
 
 
-  // Publish
-  //pub_angle_3_.publish(angle_3_deg_msg);
-  //pub_angle_3_filtered_.publish(angle_3_deg_filtered_msg);
+
 
 
 if (offset_calculated_3 == false){
@@ -267,12 +266,33 @@ if (offset_calculated_3 == false){
   //ROS_INFO("Received initial angle from dynamixel 3: [%f]",dynam_state_3_initial_);
   //ROS_INFO("Offset angle from encoder 3: [%f]",offset_angle_a_3_);
   //ROS_INFO("Encoder 3 filtered and offset corrected: [%f]",enc_3_angle_filt_offset_);
-  //ROS_INFO("----");
   }
 
+  ROS_INFO("OFFSET corrected [%i]",offset_calculated_3);
 
   enc_3_angle_filt_offset_ = median_val_e3-offset_angle_a_3_;
-  ROS_INFO("Encoder 3 filtered and offset corrected: [%f]",enc_3_angle_filt_offset_);
+  //ROS_INFO("Encoder 3 filtered and offset corrected: [%f]",enc_3_angle_filt_offset_);
+
+
+  // Calculate angle difference
+  angle_diff_a_3_ = enc_3_angle_filt_offset_-dynam_angle_3_;
+  ROS_INFO("enc_3_angle_filt_offset_ = [%f]",enc_3_angle_filt_offset_);
+  ROS_INFO("dynam_angle_3_ = [%f]",dynam_angle_3_);
+  ROS_INFO("angle_diff_a_3_ = [%f]",angle_diff_a_3_);
+
+  // Calculate torque estimate
+  t_est_3_ = angle_diff_a_3_*k_3_;
+
+  // Create message from value
+  std_msgs::Float64 t_est_3_msg;
+  std_msgs::Float64 angle_3_deg_filtered_o_msg;
+
+  t_est_3_msg.data = angle_deg_a3;
+  angle_3_deg_filtered_o_msg.data = enc_3_angle_filt_offset_;
+
+  // Publish
+  pub_angle_3_.publish(t_est_3_msg);
+  pub_angle_3_filtered_o_.publish(angle_3_deg_filtered_o_msg);
 
 
 
