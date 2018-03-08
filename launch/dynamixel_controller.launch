@@ -5,17 +5,13 @@
   <node pkg="dynamixel_controller" name="dynamixel_controller_node"
         type="dynamixel_controller_node" clear_params="true" output="screen" >
 
-        <!--  ReEmapping to use with whole setup-->
 
-        <!-- <remap from="/tilt_controller_1/command" to="/arm/joint1_position_controller/command" /> -->
-        <!-- <remap from="/tilt_controller_2/command" to="/arm/joint2_position_controller/command" /> -->
-        <!-- <remap from="/tilt_controller_3/command" to="/arm/joint3_position_controller/command" /> -->
 
-        <!-- <remap from="/tilt_controller_1/state" to="/arm/joint1_position_controller/state" /> -->
+
 
         <!-- HEBI interface -->
         <!-- <remap from="/tilt_controller_2/state" to="/arm/joint2_position_controller/state" /> -->
-        <!-- <remap from="/tilt_controller_3/state" to="/arm/joint3_position_controller/state" /> -->
+
 
 
 

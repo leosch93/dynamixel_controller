@@ -199,8 +199,13 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
     // Calculate angle difference
     angle_diff_a_1_ = enc_1_angle_filt_offset_-dynam_angle_1_;
 
+    // ROS_INFO("enc_1_angle_filt_offset_ = [%f]",enc_1_angle_filt_offset_);
+    // ROS_INFO("dynam_angle_1_ = [%f]",dynam_angle_1_);
+    // ROS_INFO("angle_diff_a_1_ = [%f]",angle_diff_a_1_);
+
     // Calculate torque estimate
     t_est_1_ = angle_diff_a_1_*k_1_;
+    // ROS_INFO("Torque estimate in Nm = [%f]",t_est_1_);
 
     // Create message from value
     std_msgs::Float64 t_est_1_msg;
@@ -268,7 +273,7 @@ if (offset_calculated_3 == false){
   //ROS_INFO("Encoder 3 filtered and offset corrected: [%f]",enc_3_angle_filt_offset_);
   }
 
-  ROS_INFO("OFFSET corrected [%i]",offset_calculated_3);
+  // ROS_INFO("OFFSET corrected [%i]",offset_calculated_3);
 
   enc_3_angle_filt_offset_ = median_val_e3-offset_angle_a_3_;
   //ROS_INFO("Encoder 3 filtered and offset corrected: [%f]",enc_3_angle_filt_offset_);
@@ -276,9 +281,9 @@ if (offset_calculated_3 == false){
 
   // Calculate angle difference
   angle_diff_a_3_ = enc_3_angle_filt_offset_-dynam_angle_3_;
-  ROS_INFO("enc_3_angle_filt_offset_ = [%f]",enc_3_angle_filt_offset_);
-  ROS_INFO("dynam_angle_3_ = [%f]",dynam_angle_3_);
-  ROS_INFO("angle_diff_a_3_ = [%f]",angle_diff_a_3_);
+  // ROS_INFO("enc_3_angle_filt_offset_ = [%f]",enc_3_angle_filt_offset_);
+  // ROS_INFO("dynam_angle_3_ = [%f]",dynam_angle_3_);
+  // ROS_INFO("angle_diff_a_3_ = [%f]",angle_diff_a_3_);
 
   // Calculate torque estimate
   t_est_3_ = angle_diff_a_3_*k_3_;
