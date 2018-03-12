@@ -73,24 +73,29 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
 // Callback for dynamic reconfigure
 void ControllerProcessor::ConfigCallback(
   dynamixel_controller::controllerConfig &config, uint32_t level) {
-  ROS_INFO("Reconfigure Request: %f %f %f %d %d %f %f %f",
+  ROS_INFO("Reconfigure Request: %f %f %f %d %d %d %f %f %f %f %f",
             config.double_param_1,
             config.double_param_2,
             config.double_param_3,
             config.bool_start_positive,
             config.bool_start_negative,
+            config.bool_start_both,
             config.double_param_inc,
             config.max_angle_pos,
-            config.max_angle_neg);
+            config.max_angle_neg,
+            config.max_angle_both_pos,
+            config.max_angle_both_neg);
 
             bool start_pos=config.bool_start_positive;
             bool start_neg=config.bool_start_negative;
+            bool bool_start_both=config.bool_start_both;
             float incr=config.double_param_inc;
             float max_angle_pos=config.max_angle_pos;
             float max_angle_neg=config.max_angle_neg;
+            float max_angle_both_pos=config.max_angle_both_pos;
+            float max_angle_both_neg=config.max_angle_both_neg;
 
-
-            if(!start_pos && !start_neg){
+            if(!start_pos && !start_neg && !bool_start_both){
               ROS_INFO("Entered manual control mode");
               std_msgs::Float64 testangle_1;
               testangle_1.data = M_PI+config.double_param_1/360*2*M_PI;
@@ -114,20 +119,20 @@ void ControllerProcessor::ConfigCallback(
               std_msgs::Float64 testangle_3;
               float temp_3_pos = testangle_3.data*360/2/M_PI;
               // ROS_INFO("Initialized test angle %f",temp_3_pos);
-              ROS_INFO("Sleeping 5s, then starting increasing angles");
-              ros::Duration(5).sleep();
+              ROS_INFO("Sleeping 3s, then starting increasing angles");
+              ros::Duration(3).sleep();
               for(temp_3_pos;temp_3_pos <= (max_angle_pos+0.01);temp_3_pos = temp_3_pos+incr)
                   {
                     testangle_3.data = M_PI+temp_3_pos/360*2*M_PI;
                     ROS_INFO("Test_angle to publish from for loop %f",temp_3_pos);
                     pub_cmd_3_.publish(testangle_3);
                     ROS_INFO("The published testing angle is: %f",testangle_3.data*360/2/M_PI);
-                    ROS_INFO("Sleeping 2s");
-                    ros::Duration(2).sleep();
+                    ROS_INFO("Sleeping 1s");
+                    ros::Duration(1).sleep();
                   }
 
-              ROS_INFO("Sleeping 5s, then starting decreasing angles");
-              ros::Duration(5).sleep();
+              ROS_INFO("Sleeping 3s, then starting decreasing angles");
+              ros::Duration(3).sleep();
               temp_3_pos = testangle_3.data*360/2/M_PI;
               for(temp_3_pos;temp_3_pos >= 179.99 ;temp_3_pos = temp_3_pos-incr)
                   {
@@ -135,8 +140,8 @@ void ControllerProcessor::ConfigCallback(
                     ROS_INFO("Test_angle to publish from for loop %f",temp_3_pos);
                     pub_cmd_3_.publish(testangle_3);
                     ROS_INFO("The published testing angle is: %f",testangle_3.data*360/2/M_PI);
-                    ROS_INFO("Sleeping 2s");
-                    ros::Duration(2).sleep();
+                    ROS_INFO("Sleeping 1s");
+                    ros::Duration(1).sleep();
                   }
 
               }
@@ -147,20 +152,20 @@ void ControllerProcessor::ConfigCallback(
                 std_msgs::Float64 testangle_3;
                 float temp_3_neg = testangle_3.data*360/2/M_PI;
                 // ROS_INFO("Initialized test angle %f",temp_3_neg);
-                ROS_INFO("Sleeping 5s, then starting decrease angles");
-                ros::Duration(5).sleep();
+                ROS_INFO("Sleeping 3s, then starting decrease angles");
+                ros::Duration(3).sleep();
                 for(temp_3_neg;temp_3_neg >= (max_angle_neg-0.01);temp_3_neg = temp_3_neg-incr)
                     {
                       testangle_3.data = M_PI+temp_3_neg/360*2*M_PI;
                       // ROS_INFO("Test_angle to publish from for loop %f",temp_3_pos);
                       pub_cmd_3_.publish(testangle_3);
                       ROS_INFO("The published testing angle is: %f",testangle_3.data*360/2/M_PI);
-                      ROS_INFO("Sleeping 2s");
-                      ros::Duration(2).sleep();
+                      ROS_INFO("Sleeping 1s");
+                      ros::Duration(1).sleep();
                     }
 
-                ROS_INFO("Sleeping 5s, then starting increasing angles");
-                ros::Duration(5).sleep();
+                ROS_INFO("Sleeping 3s, then starting increasing angles");
+                ros::Duration(3).sleep();
                 temp_3_neg = testangle_3.data*360/2/M_PI;
                 for(temp_3_neg;temp_3_neg <= 180.01 ;temp_3_neg = temp_3_neg+incr)
                     {
@@ -168,13 +173,58 @@ void ControllerProcessor::ConfigCallback(
                       // ROS_INFO("Test_angle to publish from for loop %f",temp_3_neg);
                       pub_cmd_3_.publish(testangle_3);
                       ROS_INFO("The published testing angle is: %f",testangle_3.data*360/2/M_PI);
-                      ROS_INFO("Sleeping 2s");
-                      ros::Duration(2).sleep();
+                      ROS_INFO("Sleeping 1s");
+                      ros::Duration(1).sleep();
                     }
 
                 }
 
 
+
+                if(bool_start_both)
+                {
+                  ROS_INFO("Entered loop mode to both angles");
+                  std_msgs::Float64 testangle_3;
+                  float temp_3_both = testangle_3.data*360/2/M_PI;
+                  // ROS_INFO("Initialized test angle %f",temp_3_pos);
+                  ROS_INFO("Sleeping 3s, then starting loop angles");
+                  ros::Duration(3).sleep();
+                  for(temp_3_both;temp_3_both <= (max_angle_both_pos+0.01);temp_3_both = temp_3_both+incr)
+                      {
+                        testangle_3.data = M_PI+temp_3_both/360*2*M_PI;
+                        ROS_INFO("Test_angle to publish from for loop %f",temp_3_both);
+                        pub_cmd_3_.publish(testangle_3);
+                        ROS_INFO("The published testing angle is: %f",testangle_3.data*360/2/M_PI);
+                        ROS_INFO("Sleeping 1s");
+                        ros::Duration(1).sleep();
+                      }
+
+                  ROS_INFO("Sleeping 3s, then starting decreasing angles");
+                  ros::Duration(3).sleep();
+                  temp_3_both = testangle_3.data*360/2/M_PI;
+                  for(temp_3_both;temp_3_both >= (180+max_angle_both_neg-0.01);temp_3_both = temp_3_both-incr)
+                      {
+                        testangle_3.data = temp_3_both/360*2*M_PI;
+                        ROS_INFO("Test_angle to publish from for loop %f",temp_3_both);
+                        pub_cmd_3_.publish(testangle_3);
+                        ROS_INFO("The published testing angle is: %f",testangle_3.data*360/2/M_PI);
+                        ROS_INFO("Sleeping 1s");
+                        ros::Duration(1).sleep();
+                      }
+                    ROS_INFO("Sleeping 3s, then starting increasing angles");
+                    ros::Duration(3).sleep();
+                    temp_3_both = testangle_3.data*360/2/M_PI;
+                    for(temp_3_both;temp_3_both <= 180.01 ;temp_3_both = temp_3_both+incr)
+                        {
+                          testangle_3.data = temp_3_both/360*2*M_PI;
+                          ROS_INFO("Test_angle to publish from for loop %f",temp_3_both);
+                          pub_cmd_3_.publish(testangle_3);
+                          ROS_INFO("The published testing angle is: %f",testangle_3.data*360/2/M_PI);
+                          ROS_INFO("Sleeping 1s");
+                          ros::Duration(1).sleep();
+                        }
+
+                  }
 
 
 }//namespace callback dynamic reconfigure
