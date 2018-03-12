@@ -93,15 +93,15 @@ void ControllerProcessor::ConfigCallback(
             if(!start_pos && !start_neg){
               ROS_INFO("Entered manual control mode");
               std_msgs::Float64 testangle_1;
-              testangle_1.data = config.double_param_1/360*2*M_PI;
+              testangle_1.data = M_PI+config.double_param_1/360*2*M_PI;
               pub_cmd_1_.publish(testangle_1);
 
               std_msgs::Float64 testangle_2;
-              testangle_2.data = config.double_param_2/360*2*M_PI;
+              testangle_2.data = M_PI+config.double_param_2/360*2*M_PI;
               pub_cmd_2_.publish(testangle_2);
 
               std_msgs::Float64 testangle_3;
-              testangle_3.data = config.double_param_3/360*2*M_PI;
+              testangle_3.data = M_PI+config.double_param_3/360*2*M_PI;
               pub_cmd_3_.publish(testangle_3);
 
             }
@@ -118,7 +118,7 @@ void ControllerProcessor::ConfigCallback(
               ros::Duration(5).sleep();
               for(temp_3_pos;temp_3_pos <= max_angle_pos;temp_3_pos = temp_3_pos+incr)
                   {
-                    testangle_3.data = temp_3_pos/360*2*M_PI;
+                    testangle_3.data = M_PI+temp_3_pos/360*2*M_PI;
                     // ROS_INFO("Test_angle to publish from for loop %f",temp_3_pos);
                     pub_cmd_3_.publish(testangle_3);
                     ROS_INFO("The published testing angle is: %f",testangle_3.data*360/2/M_PI);
@@ -129,7 +129,7 @@ void ControllerProcessor::ConfigCallback(
               ROS_INFO("Sleeping 5s, then starting decreasing angles");
               ros::Duration(5).sleep();
               temp_3_pos = testangle_3.data*360/2/M_PI;
-              for(temp_3_pos;temp_3_pos >= 0 ;temp_3_pos = temp_3_pos-incr)
+              for(temp_3_pos;temp_3_pos >= 180 ;temp_3_pos = temp_3_pos-incr)
                   {
                     testangle_3.data = temp_3_pos/360*2*M_PI;
                     ROS_INFO("Test_angle to publish from for loop %f",temp_3_pos);
@@ -151,7 +151,7 @@ void ControllerProcessor::ConfigCallback(
                 ros::Duration(5).sleep();
                 for(temp_3_neg;temp_3_neg >= max_angle_neg;temp_3_neg = temp_3_neg-incr)
                     {
-                      testangle_3.data = temp_3_neg/360*2*M_PI;
+                      testangle_3.data = M_PI+temp_3_neg/360*2*M_PI;
                       // ROS_INFO("Test_angle to publish from for loop %f",temp_3_pos);
                       pub_cmd_3_.publish(testangle_3);
                       ROS_INFO("The published testing angle is: %f",testangle_3.data*360/2/M_PI);
@@ -162,7 +162,7 @@ void ControllerProcessor::ConfigCallback(
                 ROS_INFO("Sleeping 5s, then starting increasing angles");
                 ros::Duration(5).sleep();
                 temp_3_neg = testangle_3.data*360/2/M_PI;
-                for(temp_3_neg;temp_3_neg <= 0 ;temp_3_neg = temp_3_neg+incr)
+                for(temp_3_neg;temp_3_neg <= 180 ;temp_3_neg = temp_3_neg+incr)
                     {
                       testangle_3.data = temp_3_neg/360*2*M_PI;
                       ROS_INFO("Test_angle to publish from for loop %f",temp_3_neg);
