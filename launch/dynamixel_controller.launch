@@ -4,17 +4,8 @@
   <!-- Launch catkinpkg_framework node -->
   <node pkg="dynamixel_controller" name="dynamixel_controller_node"
         type="dynamixel_controller_node" clear_params="true" output="screen" >
-
-
-
-
-
         <!-- HEBI interface -->
         <!-- <remap from="/tilt_controller_2/state" to="/arm/joint2_position_controller/state" /> -->
-
-
-
-
   </node>
 
   <!-- Launch rviz -->
