@@ -131,45 +131,51 @@ void ControllerProcessor::ConfigCallback(
             // Eigen::Vector3d pos_3d = ControllerProcessor::Joint_to_position(fk_testing_angle_1/360.0*2.0*M_PI, fk_testing_angle_2/360.0*2.0*M_PI, fk_testing_angle_3/360.0*2.0*M_PI);
             // ROS_INFO("Position of forward kinemaics %f %f %f",pos_3d(0), pos_3d(1),pos_3d(2));
 
-            Eigen::Matrix4f transform1 = ControllerProcessor::T_world_dynamixel_to_hebi(fk_testing_angle_3/360*2*M_PI);
-            ROS_INFO("transform1 calculated World to Dynamixel_to_hebi");
-            ROS_INFO("%f ||%f|| %f|| %f",transform1(0,0),transform1(0,1),transform1(0,2),transform1(0,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform1(1,0),transform1(1,1),transform1(1,2),transform1(1,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform1(2,0),transform1(2,1),transform1(2,2),transform1(2,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform1(3,0),transform1(3,1),transform1(3,2),transform1(3,3));
+            // Eigen::Matrix4f transform1 = ControllerProcessor::T_world_dynamixel_to_hebi(fk_testing_angle_3/360*2*M_PI);
+            // ROS_INFO("transform1 calculated World to Dynamixel_to_hebi");
+            // ROS_INFO("%f ||%f|| %f|| %f",transform1(0,0),transform1(0,1),transform1(0,2),transform1(0,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform1(1,0),transform1(1,1),transform1(1,2),transform1(1,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform1(2,0),transform1(2,1),transform1(2,2),transform1(2,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform1(3,0),transform1(3,1),transform1(3,2),transform1(3,3));
+            //
+            // Eigen::Matrix4f transform2 = ControllerProcessor::T_dynamixel_to_hebi_clamp2(fk_testing_angle_2/360*2*M_PI);
+            // ROS_INFO("transform2 calculated Dynamixel_to_hebi to Clamp2");
+            // ROS_INFO("%f ||%f|| %f|| %f",transform2(0,0),transform2(0,1),transform2(0,2),transform2(0,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform2(1,0),transform2(1,1),transform2(1,2),transform2(1,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform2(2,0),transform2(2,1),transform2(2,2),transform2(2,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform2(3,0),transform2(3,1),transform2(3,2),transform2(3,3));
+            //
+            //
+            // Eigen::Matrix4f transform3 = ControllerProcessor::T_clamp2_clamp1(fk_testing_angle_1/360*2*M_PI);
+            // ROS_INFO("transform1 calculated Clamp2 to Clamp1");
+            // ROS_INFO("%f ||%f|| %f|| %f",transform3(0,0),transform3(0,1),transform3(0,2),transform3(0,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform3(1,0),transform3(1,1),transform3(1,2),transform3(1,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform3(2,0),transform3(2,1),transform3(2,2),transform3(2,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform3(3,0),transform3(3,1),transform3(3,2),transform3(3,3));
+            //
+            // Eigen::Matrix4f transform4 = ControllerProcessor::T_clamp1_tip();
+            // ROS_INFO("transform4 Clamp1 to tip");
+            // ROS_INFO("%f ||%f|| %f|| %f",transform4(0,0),transform4(0,1),transform4(0,2),transform4(0,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform4(1,0),transform4(1,1),transform4(1,2),transform4(1,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform4(2,0),transform4(2,1),transform4(2,2),transform4(2,3));
+            // ROS_INFO("%f ||%f|| %f|| %f",transform4(3,0),transform4(3,1),transform4(3,2),transform4(3,3));
 
-            Eigen::Matrix4f transform2 = ControllerProcessor::T_dynamixel_to_hebi_clamp2(fk_testing_angle_2/360*2*M_PI);
-            ROS_INFO("transform2 calculated Dynamixel_to_hebi to Clamp2");
-            ROS_INFO("%f ||%f|| %f|| %f",transform2(0,0),transform2(0,1),transform2(0,2),transform2(0,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform2(1,0),transform2(1,1),transform2(1,2),transform2(1,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform2(2,0),transform2(2,1),transform2(2,2),transform2(2,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform2(3,0),transform2(3,1),transform2(3,2),transform2(3,3));
-
-
-            Eigen::Matrix4f transform3 = ControllerProcessor::T_clamp2_clamp1(fk_testing_angle_1/360*2*M_PI);
-            ROS_INFO("transform1 calculated Clamp2 to Clamp1");
-            ROS_INFO("%f ||%f|| %f|| %f",transform3(0,0),transform3(0,1),transform3(0,2),transform3(0,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform3(1,0),transform3(1,1),transform3(1,2),transform3(1,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform3(2,0),transform3(2,1),transform3(2,2),transform3(2,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform3(3,0),transform3(3,1),transform3(3,2),transform3(3,3));
-
-            Eigen::Matrix4f transform4 = ControllerProcessor::T_clamp1_tip();
-            ROS_INFO("transform4 Clamp1 to tip");
-            ROS_INFO("%f ||%f|| %f|| %f",transform4(0,0),transform4(0,1),transform4(0,2),transform4(0,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform4(1,0),transform4(1,1),transform4(1,2),transform4(1,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform4(2,0),transform4(2,1),transform4(2,2),transform4(2,3));
-            ROS_INFO("%f ||%f|| %f|| %f",transform4(3,0),transform4(3,1),transform4(3,2),transform4(3,3));
-
-            Eigen::Matrix3f testrot = ControllerProcessor::Joint_to_rotation_mat(0,0,0);
-            ROS_INFO("RotationMatrix");
-            ROS_INFO("%f ||%f|| %f",testrot(0,0),testrot(0,1),testrot(0,2));
-            ROS_INFO("%f ||%f|| %f",testrot(1,0),testrot(1,1),testrot(1,2));
-            ROS_INFO("%f ||%f|| %f",testrot(2,0),testrot(2,1),testrot(2,2));
-            ROS_INFO("");
-
-            Eigen::Quaternionf testquat = ControllerProcessor::Joint_to_quaternion(0,0,0);
-            ROS_INFO("Quaternion %f ||%f|| %f|| %f",testquat.w(),testquat.x(),testquat.y(),testquat.z());
-
+            // Eigen::Matrix3f testrot = ControllerProcessor::Joint_to_rotation_mat(0,0,0);
+            // ROS_INFO("RotationMatrix");
+            // ROS_INFO("%f ||%f|| %f",testrot(0,0),testrot(0,1),testrot(0,2));
+            // ROS_INFO("%f ||%f|| %f",testrot(1,0),testrot(1,1),testrot(1,2));
+            // ROS_INFO("%f ||%f|| %f",testrot(2,0),testrot(2,1),testrot(2,2));
+            // ROS_INFO("----");
+            //
+            // Eigen::Quaternionf testquat = ControllerProcessor::Joint_to_quaternion(0,0,0);
+            // ROS_INFO("Quaternion %f ||%f|| %f|| %f",testquat.w(),testquat.x(),testquat.y(),testquat.z());
+            //
+            // Eigen::Matrix3f testmat = ControllerProcessor::Quaternion_to_rotation_mat(testquat);
+            // ROS_INFO("BacktoRotationMatrix");
+            // ROS_INFO("%f ||%f|| %f",testmat(0,0),testmat(0,1),testmat(0,2));
+            // ROS_INFO("%f ||%f|| %f",testmat(1,0),testmat(1,1),testmat(1,2));
+            // ROS_INFO("%f ||%f|| %f",testmat(2,0),testmat(2,1),testmat(2,2));
+            // ROS_INFO("----");
 
             if(testbench_settings){
               if(!start_pos && !start_neg && !bool_start_both){
@@ -464,6 +470,12 @@ Eigen::Quaternionf ControllerProcessor::Joint_to_quaternion(const double& input1
   return q;
 }
 
+Eigen::Matrix3f ControllerProcessor::Quaternion_to_rotation_mat(const Eigen::Quaternionf& q) {
+
+  Eigen::Matrix3f mat;
+  mat = q.normalized().toRotationMatrix();
+  return mat;
+}
 
 
 
