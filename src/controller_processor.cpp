@@ -176,6 +176,21 @@ void ControllerProcessor::ConfigCallback(
             // ROS_INFO("%f ||%f|| %f",testmat(1,0),testmat(1,1),testmat(1,2));
             // ROS_INFO("%f ||%f|| %f",testmat(2,0),testmat(2,1),testmat(2,2));
             // ROS_INFO("----");
+            // Eigen::Matrix3f testmat = Joint_to_position_jacobian(0,0,0);
+            // ROS_INFO("testing");
+            // ROS_INFO("testing jacibians");
+            // ROS_INFO("%f ||%f|| %f",testmat(0,0),testmat(0,1),testmat(0,2));
+            // ROS_INFO("%f ||%f|| %f",testmat(1,0),testmat(1,1),testmat(1,2));
+            // ROS_INFO("%f ||%f|| %f",testmat(2,0),testmat(2,1),testmat(2,2));
+            //
+            // Eigen::Matrix3f testmat_1 = Joint_to_rotation_jacobian(0,0,0);
+            // ROS_INFO("testing");
+            // ROS_INFO("testing jacibians");
+            // ROS_INFO("%f ||%f|| %f",testmat_1(0,0),testmat_1(0,1),testmat_1(0,2));
+            // ROS_INFO("%f ||%f|| %f",testmat_1(1,0),testmat_1(1,1),testmat_1(1,2));
+            // ROS_INFO("%f ||%f|| %f",testmat_1(2,0),testmat_1(2,1),testmat_1(2,2));
+
+
 
             if(testbench_settings){
               if(!start_pos && !start_neg && !bool_start_both){
@@ -446,11 +461,11 @@ Eigen::Matrix3f ControllerProcessor::Joint_to_rotation_mat(const double& input1,
   return R;
 }
 
-Eigen::Vector3d ControllerProcessor::Joint_to_position(const double& input1, const double& input2, const double& input3) {
+Eigen::Vector3f ControllerProcessor::Joint_to_position(const double& input1, const double& input2, const double& input3) {
 
   Eigen::Matrix4f T;
   T = T_world_tip(input3,input2,input1);
-  Eigen::Vector3d pos;
+  Eigen::Vector3f pos;
 
   pos(0) = T(0,3);
   pos(1) = T(1,3);
@@ -491,6 +506,215 @@ Eigen::Vector3f ControllerProcessor::Rotate_vec_with_quaternion(const Eigen::Qua
   rotated_vec = Rotation_matrix*v;
   return rotated_vec;
 }
+
+Eigen::Matrix3f ControllerProcessor::Joint_to_position_jacobian(const double& input1, const double& input2, const double& input3) {
+  Eigen::Matrix4f T01 = T_world_dynamixel_to_hebi(input3);
+  Eigen::Matrix4f T12 = T_dynamixel_to_hebi_clamp2(input2);
+  Eigen::Matrix4f T23 = T_clamp2_clamp1(input1);
+  Eigen::Matrix4f T34 = T_clamp1_tip();
+
+  Eigen::Matrix4f TW1 = T01;
+  Eigen::Matrix4f TW2 = TW1*T12;
+  Eigen::Matrix4f TW3 = TW2*T23;
+  Eigen::Matrix4f TW4 = TW3*T34;
+
+  Eigen::Matrix3f RW1 = TW1.block(0,0,3,3);
+  Eigen::Matrix3f RW2 = TW2.block(0,0,3,3);
+  Eigen::Matrix3f RW3 = TW3.block(0,0,3,3);
+  Eigen::Matrix3f RW4 = TW4.block(0,0,3,3);
+
+  Eigen::Vector3f r_W1 = TW1.block(0,3,3,1);
+  Eigen::Vector3f r_W2 = TW2.block(0,3,3,1);
+  Eigen::Vector3f r_W3 = TW3.block(0,3,3,1);
+  Eigen::Vector3f r_W4 = TW4.block(0,3,3,1);
+
+
+  Eigen::Vector3f omega_hat_1(0.0, 0.0, 1.0);
+
+  Eigen::Vector3f omega_hat_2(1.0, 0.0, 0.0);
+
+  Eigen::Vector3f omega_hat_3(0.0, 0.0, 1.0);
+
+  Eigen::Vector3f r_Wtip = Joint_to_position(input1,input2,input3);
+
+  Eigen::Vector3f Resultvector_1 = (RW1*omega_hat_1).cross(r_Wtip-r_W1);
+  Eigen::Vector3f Resultvector_2 = (RW2*omega_hat_2).cross(r_Wtip-r_W2);
+  Eigen::Vector3f Resultvector_3 = (RW3*omega_hat_3).cross(r_Wtip-r_W3);
+
+  Eigen::Matrix3f J;
+  J << Resultvector_1(0),Resultvector_2(0),Resultvector_3(0),
+        Resultvector_1(1),Resultvector_2(1),Resultvector_3(1),
+        Resultvector_1(2),Resultvector_2(2),Resultvector_3(2);
+
+
+
+
+  return J;
+
+}
+
+Eigen::Matrix3f ControllerProcessor::Joint_to_rotation_jacobian(const double& input1, const double& input2, const double& input3) {
+  Eigen::Matrix4f T01 = T_world_dynamixel_to_hebi(input3);
+  Eigen::Matrix4f T12 = T_dynamixel_to_hebi_clamp2(input2);
+  Eigen::Matrix4f T23 = T_clamp2_clamp1(input1);
+  Eigen::Matrix4f T34 = T_clamp1_tip();
+
+  Eigen::Matrix4f TW1 = T01;
+  Eigen::Matrix4f TW2 = TW1*T12;
+  Eigen::Matrix4f TW3 = TW2*T23;
+  Eigen::Matrix4f TW4 = TW3*T34;
+
+  Eigen::Matrix3f RW1 = TW1.block(0,0,3,3);
+  Eigen::Matrix3f RW2 = TW2.block(0,0,3,3);
+  Eigen::Matrix3f RW3 = TW3.block(0,0,3,3);
+  Eigen::Matrix3f RW4 = TW4.block(0,0,3,3);
+
+
+  Eigen::Vector3f omega_hat_1(0.0, 0.0, 1.0);
+  Eigen::Vector3f omega_hat_2(1.0, 0.0, 0.0);
+  Eigen::Vector3f omega_hat_3(0.0, 0.0, 1.0);
+
+
+  Eigen::Vector3f Resultvector_1 = RW1*omega_hat_1;
+  Eigen::Vector3f Resultvector_2 = RW2*omega_hat_2;
+  Eigen::Vector3f Resultvector_3 = RW3*omega_hat_3;
+
+  Eigen::Matrix3f J;
+  J << Resultvector_1(0),Resultvector_2(0),Resultvector_3(0),
+        Resultvector_1(1),Resultvector_2(1),Resultvector_3(1),
+        Resultvector_1(2),Resultvector_2(2),Resultvector_3(2);
+
+
+
+
+
+  return J;
+
+}
+
+Eigen::Matrix3f ControllerProcessor::SkewMatrix(const Eigen::Vector3f& v) {
+
+  Eigen::Matrix3f mat;
+
+  mat << 0,-v(2),v(1),
+          v(2),0,-v(0),
+          -v(1),v(0),0;
+
+  return mat;
+}
+
+Eigen::MatrixXf ControllerProcessor::map_loc_rot_vel(const Eigen::Quaternionf& q) {
+
+
+  Eigen::Matrix3f temp_mat;
+  temp_mat << q.w()*Eigen::Matrix3f::Identity();
+
+  Eigen::Vector3f temp_vec(q.x(),q.y(),q.z());
+  Eigen::Matrix3f temp_mat_2;
+  temp_mat_2 << SkewMatrix(temp_vec);
+
+  Eigen::Matrix3f temp_mat_3;
+  temp_mat_3 = temp_mat+temp_mat_2;
+
+
+  Eigen::MatrixXf mat(3,3);
+  mat.resize(4,3);
+  mat << -q.x(),-q.y(),-q.z(),
+        temp_mat_3(0,0),temp_mat_3(0,1),temp_mat_3(0,2),
+        temp_mat_3(1,0),temp_mat_3(1,1),temp_mat_3(1,2),
+        temp_mat_3(2,0),temp_mat_3(0,1),temp_mat_3(2,2);
+
+  return mat;
+}
+
+Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r_des,const Eigen::Quaternionf& q_des_IE,const Eigen::Vector3f& r_init,const double& epsilon) {
+
+  int iterations = 0;
+  Eigen::Vector3f largenumbers(999999999,999999999,999999999);
+  double max_iterations = 1000;
+
+  Eigen::Quaternionf q_des_EI = q_des_IE.inverse();
+
+  double input1 = r_init(0);
+  double input2 = r_init(1);
+  double input3 = r_init(2);
+
+
+  while(largenumbers.norm()>epsilon && iterations<max_iterations){
+
+    Eigen::Quaternionf q_temp = Joint_to_quaternion(input1,input2,input3);
+    Eigen::Quaternionf q_EI = q_temp.inverse();
+
+    Eigen::Vector3f dr = r_des-Joint_to_position(input1,input2,input3);
+    Eigen::Vector4f dq;
+    dq(0)= q_des_EI.w()-q_EI.w();
+    dq(1)= q_des_EI.x()-q_EI.x();
+    dq(2)= q_des_EI.y()-q_EI.y();
+    dq(3)= q_des_EI.z()-q_EI.z();
+
+
+    Eigen::Matrix3f R = Joint_to_rotation_mat(input1,input2,input3);
+    Eigen::Matrix3f R_trans = R.transpose();
+
+
+    Eigen::Matrix3f Apos = Joint_to_position_jacobian(input1,input2,input3);
+    Eigen::MatrixXf Arot(4,3);
+    Arot = Joint_to_rotation_jacobian(input1,input2,input3)*R_trans*map_loc_rot_vel(q_EI);
+
+    Eigen::MatrixXf A(7,3);
+    A << Apos(0,0),Apos(0,1),Apos(0,2),
+        Apos(1,0),Apos(1,1),Apos(1,2),
+        Apos(2,0),Apos(2,1),Apos(2,2),
+        Arot(0,0),Arot(0,1),Arot(0,1),
+        Arot(1,0),Arot(1,1),Arot(1,2),
+        Arot(2,0),Arot(2,1),Arot(2,2),
+        Arot(3,0),Arot(3,1),Arot(3,2);
+
+    Eigen::MatrixXf vec(7);
+      vec(0) = dr(0);
+      vec(1) = dr(1);
+      vec(2) = dr(2);
+      vec(3) = dq(0);
+      vec(4) = dq(1);
+      vec(5) = dq(2);
+      vec(6) = dq(3);
+
+      // largenumbers = (A)*vec;
+      input1 = largenumbers(0);
+      input2 = largenumbers(1);
+      input3 = largenumbers(2);
+
+      iterations = iterations+1;
+  }
+
+  double found_angle_1 = input1;
+  double found_angle_2 = input2;
+  double found_angle_3 = input3;
+
+
+  Eigen::Vector3f pos_error = r_des - Joint_to_position(found_angle_1,found_angle_2,found_angle_3);
+  // Eigen::Quaternionf quaterror_temp_1 = Multiply_quaternions(q_des_EI,Joint_to_quaternion(found_angle_1,found_angle_2,found_angle_3));
+  // double quaterror_temp_2 = quaterror_temp_1.norm()
+  // double quat_error = 1-quaterror_temp_2;
+
+  ROS_INFO("Inverse Kinematics terminated after %d iterations",iterations);
+  // ROS_INFO("Postistion error %f",pos_error.norm());
+  // ROS_INFO("Attitude error %f",quat_error);
+
+  Eigen::Vector3f res_vector(found_angle_1,found_angle_2,found_angle_3);
+  return res_vector;
+
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
