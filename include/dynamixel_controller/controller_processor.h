@@ -1,18 +1,30 @@
 //
 // Created by Leo on 16.02.16.
 //
-
 #ifndef DYNAMIXEL_CONTROLLER_CONTROLLER_PROCESSOR_H
 #define DYNAMIXEL_CONTROLLER_CONTROLLER_PROCESSOR_H
 
 #include <ros/package.h>
 #include <ros/ros.h>
-#include <sensor_msgs/Image.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/Float32.h>
 #include <ros/time.h>
 #include <geometry_msgs/PointStamped.h>
 #include <dynamixel_msgs/JointState.h>
+#include "tf/tf.h"
+#include <algorithm>
+#include <cmath>
+#include <angles/angles.h>
+#include <tf2_ros/transform_listener.h>
+#include "tf/transform_listener.h"
+#include <geometry_msgs/TransformStamped.h>
+#include <tf2_msgs/TFMessage.h>
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/message_filter.h"
+#include "message_filters/subscriber.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#include <eigen3/Eigen/Dense>
+
 
 #include <iostream>
 #include <vector>
@@ -31,6 +43,9 @@ static const std::string kDefaultSubTopic_3     = "/default_sub_3";
 static const std::string kDefaultSubTopic_1_dyn   = "/default_sub_1_dyn";
 static const std::string kDefaultSubTopic_3_dyn    = "/default_sub_3_dyn";
 
+// static const std::string kDefaultSubTopic_tf    = "/default_sub_tf";
+// static const std::string kDefaultSubTopic_tf_staic    = "/default_sub_tf_static";
+
 static const std::string kDefaultObjectsPubTopic_1 = "/default_pub1";
 static const std::string kDefaultObjectsPubTopic_2 = "/default_pub2";
 static const std::string kDefaultObjectsPubTopic_3 = "/default_pub3";
@@ -47,6 +62,9 @@ static constexpr int kDefaultSubQueueSize_3   = 1;
 static constexpr int kDefaultSubQueueSize_1_dyn  = 1;
 static constexpr int kDefaultSubQueueSize_3_dyn  = 1;
 
+static constexpr int kDefaultSubQueueSize_3_tf  = 1;
+static constexpr int kDefaultSubQueueSize_3_tf_static  = 1;
+
 static constexpr int kDefaultObjectsPubQueueSize_1 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_2 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_3 = 1;
@@ -56,10 +74,11 @@ static constexpr int kDefaultPubQueueSize_2 = 1;
 static constexpr int kDefaultPubQueueSize_3 = 1;
 static constexpr int kDefaultPubQueueSize_4 = 1;
 
+
 /**
  * \brief Processor which organises the subscription and publishing of the data.
  * @author Leonard Schai (lschai@student.ethz.ch)
- * @date February, 2017
+ * @date February, 2018
  */
 class ControllerProcessor {
  public:
@@ -87,6 +106,26 @@ class ControllerProcessor {
   void CallbackEnc3(const geometry_msgs::PointStamped& pt_s_3);
 
 
+  Eigen::Matrix4f T_world_dynamixel_to_hebi(const double& a3);
+  Eigen::Matrix4f T_dynamixel_to_hebi_clamp2(const double& a2);
+  Eigen::Matrix4f T_clamp2_clamp1(const double& a1);
+  Eigen::Matrix4f T_clamp1_tip();
+
+  Eigen::Matrix4f T_world_tip(const double& input3,const double& input2,const double& input1);
+
+
+  Eigen::Vector3d Forward_Kinematics(const double& input1, const double& input2, const double& input3);
+
+  // void Forward_Kinematics(const int test);
+  // void Forward_Kinematics(const int& input1, const int& input2, double* output1, double* output2, double* output3);
+
+  // Eigen::Vector3d Forward_Kinematics(const double& input1, const double& input2, const double& input3);
+
+
+  // void Forward_Kinematics(const int test);
+  // void Get_Jacobian(const geometry_msgs::PointStamped& goalpoint,,,);
+  // void Inverse_Kinematics(const geometry_msgs::PointStamped& goalpoint,,,);
+
 
   void ConfigCallback(dynamixel_controller::controllerConfig &config, uint32_t level);
 
@@ -107,6 +146,10 @@ class ControllerProcessor {
   /** \brief Ros Subscriber for the dynamixel. */
   ros::Subscriber sub_dyn_1_;
   ros::Subscriber sub_dyn_3_;
+
+  /** \brief Ros Subscriber for the transforms. */
+  // ros::Subscriber sub_tf_;
+  // ros::Subscriber sub_tf_static_;
 
   /** \brief Ros Publisher for the commands. */
   ros::Publisher pub_cmd_1_;
@@ -169,8 +212,12 @@ class ControllerProcessor {
   float k_1_ = 0.5; //Nm/deg
   float k_3_ = 0.5; //Nm/deg
 
+  // Torque estimate
   float t_est_1_{};
   float t_est_3_{};
+
+
+
 
 
 

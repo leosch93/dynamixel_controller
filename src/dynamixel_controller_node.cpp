@@ -26,6 +26,14 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
   nh.param("queue_size_sub_dynamixel_3", parameter->queue_size_sub_dynamixel_3,
           kDefaultSubQueueSize_3_dyn);
 
+  // nh.param("sub_rostopic_tf", parameter->sub_rostopic_tf,
+  //         kDefaultSubTopic_tf);
+  // nh.param("queue_size_sub_tf", parameter->queue_size_sub_tf,
+  //         kDefaultSubQueueSize_3_tf);
+  // nh.param("sub_rostopic_tf_static", parameter->sub_rostopic_tf_static,
+  //         kDefaultSubTopic_tf_staic);
+  // nh.param("queue_size_sub_tf_static", parameter->queue_size_sub_tf_static,
+  //         kDefaultSubQueueSize_3_tf_static);
 
 
   nh.param("pub_rostopic_command_1", parameter->pub_rostopic_command_1,
@@ -67,7 +75,12 @@ int main (int argc, char** argv)
 {
   // Initialize ROS
   ros::init (argc, argv, "dynamixel_controller_node");
+
+
   ros::NodeHandle nh;
+
+
+
 
   // Initialize parameter structure
   controller::ParameterBag parameter;

@@ -90,6 +90,20 @@ struct ParameterBag {
   int queue_size_sub_dynamixel_3;
 
 
+  // /** Subscribed rostopic for the tf data of the model of the arm. */
+  // std::string sub_rostopic_tf;
+  //
+  // /** Queue size for the tf data of the model of the arm. */
+  // int queue_size_sub_tf;
+  //
+  // /** Subscribed rostopic for the tf_static data of the model of the arm. */
+  // std::string sub_rostopic_tf_static;
+  //
+  // /** Queue size for the tf_static data of the model of the arm. */
+  // int queue_size_sub_tf_static;
+
+
+
 };
 
 } // namespace controller
