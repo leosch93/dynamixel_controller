@@ -115,8 +115,9 @@ class ControllerProcessor {
   Eigen::Vector3d Joint_to_position(const double& input1, const double& input2, const double& input3);
   Eigen::Quaternionf Joint_to_quaternion(const double& input1, const double& input2, const double& input3);
   Eigen::Matrix3f Quaternion_to_rotation_mat(const Eigen::Quaternionf& q);
+  Eigen::Quaternionf Multiply_quaternions(const Eigen::Quaternionf& q1,const Eigen::Quaternionf& q2);
+  Eigen::Vector3f Rotate_vec_with_quaternion(const Eigen::Quaternionf& q,const Eigen::Vector3f& v);
 
-  // void Forward_Kinematics(const int test);
   // void Forward_Kinematics(const int& input1, const int& input2, double* output1, double* output2, double* output3);
 
   // Eigen::Vector3d Forward_Kinematics(const double& input1, const double& input2, const double& input3);

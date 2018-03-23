@@ -477,6 +477,21 @@ Eigen::Matrix3f ControllerProcessor::Quaternion_to_rotation_mat(const Eigen::Qua
   return mat;
 }
 
+Eigen::Quaternionf ControllerProcessor::Multiply_quaternions(const Eigen::Quaternionf& q1,const Eigen::Quaternionf& q2) {
+ // ROS uses Hamiltionian
+  Eigen::Quaternionf q3;
+  q3 = q1*q2;
+  return q3;
+}
+
+Eigen::Vector3f ControllerProcessor::Rotate_vec_with_quaternion(const Eigen::Quaternionf& q,const Eigen::Vector3f& v) {
+
+  Eigen::Matrix3f Rotation_matrix = Quaternion_to_rotation_mat(q);
+  Eigen::Vector3f rotated_vec;
+  rotated_vec = Rotation_matrix*v;
+  return rotated_vec;
+}
+
 
 
 
