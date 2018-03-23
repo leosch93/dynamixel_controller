@@ -110,11 +110,10 @@ class ControllerProcessor {
   Eigen::Matrix4f T_dynamixel_to_hebi_clamp2(const double& a2);
   Eigen::Matrix4f T_clamp2_clamp1(const double& a1);
   Eigen::Matrix4f T_clamp1_tip();
-
   Eigen::Matrix4f T_world_tip(const double& input3,const double& input2,const double& input1);
-
-
-  Eigen::Vector3d Forward_Kinematics(const double& input1, const double& input2, const double& input3);
+  Eigen::Matrix3f Joint_to_rotation_mat(const double& input1, const double& input2, const double& input3);
+  Eigen::Vector3d Joint_to_position(const double& input1, const double& input2, const double& input3);
+  Eigen::Quaternionf Joint_to_quaternion(const double& input1, const double& input2, const double& input3);
 
   // void Forward_Kinematics(const int test);
   // void Forward_Kinematics(const int& input1, const int& input2, double* output1, double* output2, double* output3);

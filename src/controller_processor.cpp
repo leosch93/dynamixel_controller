@@ -127,9 +127,8 @@ void ControllerProcessor::ConfigCallback(
             // pub_cmd_3_.publish(testangle_3);
 
 
-            ROS_INFO("Testing forward Kinematics given angles %f %f %f %f",fk_testing_angle_1,fk_testing_angle_2,fk_testing_angle_3,M_PI);
-
-            // Eigen::Vector3d pos_3d = ControllerProcessor::Forward_Kinematics(fk_testing_angle_1/360*2*M_PI, fk_testing_angle_2/360*2*M_PI, fk_testing_angle_3/360*2*M_PI);
+            // ROS_INFO("Testing forward Kinematics given angles %f %f %f",fk_testing_angle_1,fk_testing_angle_2,fk_testing_angle_3);
+            // Eigen::Vector3d pos_3d = ControllerProcessor::Joint_to_position(fk_testing_angle_1/360.0*2.0*M_PI, fk_testing_angle_2/360.0*2.0*M_PI, fk_testing_angle_3/360.0*2.0*M_PI);
             // ROS_INFO("Position of forward kinemaics %f %f %f",pos_3d(0), pos_3d(1),pos_3d(2));
 
             Eigen::Matrix4f transform1 = ControllerProcessor::T_world_dynamixel_to_hebi(fk_testing_angle_3/360*2*M_PI);
@@ -161,10 +160,15 @@ void ControllerProcessor::ConfigCallback(
             ROS_INFO("%f ||%f|| %f|| %f",transform4(2,0),transform4(2,1),transform4(2,2),transform4(2,3));
             ROS_INFO("%f ||%f|| %f|| %f",transform4(3,0),transform4(3,1),transform4(3,2),transform4(3,3));
 
+            Eigen::Matrix3f testrot = ControllerProcessor::Joint_to_rotation_mat(0,0,0);
+            ROS_INFO("RotationMatrix");
+            ROS_INFO("%f ||%f|| %f",testrot(0,0),testrot(0,1),testrot(0,2));
+            ROS_INFO("%f ||%f|| %f",testrot(1,0),testrot(1,1),testrot(1,2));
+            ROS_INFO("%f ||%f|| %f",testrot(2,0),testrot(2,1),testrot(2,2));
+            ROS_INFO("");
 
-
-
-
+            Eigen::Quaternionf testquat = ControllerProcessor::Joint_to_quaternion(0,0,0);
+            ROS_INFO("Quaternion %f ||%f|| %f|| %f",testquat.w(),testquat.x(),testquat.y(),testquat.z());
 
 
             if(testbench_settings){
@@ -311,7 +315,7 @@ void ControllerProcessor::ConfigCallback(
 Eigen::Matrix4f ControllerProcessor::T_world_dynamixel_to_hebi(const double& a3) {
   double a3_offset = 45.0/360.0*2.0*M_PI;
 
-  Eigen::Matrix4f T(4,4);
+  Eigen::Matrix4f T;
   T << cos(a3-a3_offset), -sin(a3-a3_offset), 0, 0.0325,
       sin(a3-a3_offset), cos(a3-a3_offset), 0, 0,
       0, 0, 1, 0.072,
@@ -376,7 +380,6 @@ Eigen::Matrix4f ControllerProcessor::T_clamp2_clamp1(const double& a1) {
 
 }
 
-
 Eigen::Matrix4f ControllerProcessor::T_clamp1_tip() {
 
   double angle_fix_x = -90.0/360.0*2.0*M_PI;
@@ -395,7 +398,7 @@ Eigen::Matrix4f ControllerProcessor::T_clamp1_tip() {
   Eigen::Matrix3f R;
 
 
-  R = Rz*Rx;
+  R = Rx*Rz;
 
   Eigen::Matrix4f T;
   T << R(0,0), R(0,1), R(0,2), 0,
@@ -409,7 +412,6 @@ Eigen::Matrix4f ControllerProcessor::T_clamp1_tip() {
 
 }
 
-
 Eigen::Matrix4f ControllerProcessor::T_world_tip(const double& a3,const double& a2,const double& a1) {
 
   Eigen::Matrix4f T;
@@ -418,7 +420,27 @@ Eigen::Matrix4f ControllerProcessor::T_world_tip(const double& a3,const double& 
 
 }
 
-Eigen::Vector3d ControllerProcessor::Forward_Kinematics(const double& input1, const double& input2, const double& input3) {
+Eigen::Matrix3f ControllerProcessor::Joint_to_rotation_mat(const double& input1, const double& input2, const double& input3) {
+  Eigen::Matrix4f T;
+  T = T_world_tip(input3,input2,input1);
+
+  Eigen::Matrix3f R;
+  R(0,0) = T(0,0);
+  R(0,1) = T(0,1);
+  R(0,2) = T(0,2);
+
+  R(1,0) = T(1,0);
+  R(1,1) = T(1,1);
+  R(1,2) = T(1,2);
+
+  R(2,0) = T(2,0);
+  R(2,1) = T(2,1);
+  R(2,2) = T(2,2);
+
+  return R;
+}
+
+Eigen::Vector3d ControllerProcessor::Joint_to_position(const double& input1, const double& input2, const double& input3) {
 
   Eigen::Matrix4f T;
   T = T_world_tip(input3,input2,input1);
@@ -432,76 +454,19 @@ Eigen::Vector3d ControllerProcessor::Forward_Kinematics(const double& input1, co
   return pos;
 }
 
+Eigen::Quaternionf ControllerProcessor::Joint_to_quaternion(const double& input1, const double& input2, const double& input3) {
+  Eigen::Matrix3f Rot;
+  Rot = Joint_to_rotation_mat(input1,input2,input3);
+
+  Eigen::Quaternionf q;
+  q = Rot;
+
+  return q;
+}
 
 
 
 
-
-
-
-
-
-// Eigen::Vector3d ControllerProcessor::Forward_Kinematics(const double& input1, const double& input2, const double& input3) {
-
-    // Eigen::Vector3d output;
-    // give output a values
-    // return output;
-  // }
-
-// igen::Vector3d output_position = Forward_Kinematics(1.1, 2.2,3.3);
-
-
-// void ControllerProcessor::Forward_Kinematics(const int test) {
-//  // Finde endeffector position in world source_frame_
-//   // nameing
-//
-//   tf2_ros::Buffer tfBuffer;
-//   tf2_ros::TransformListener tfListener(tfBuffer);
-//
-//   std::string target_frame_ = "world";
-//   std::string source_frame_ = "tip";
-//
-//   geometry_msgs::TransformStamped transformStamped;
-//
-//
-//   try{
-//       transformStamped = tfBuffer.lookupTransform(source_frame_, target_frame_,ros::Time(0));
-//       ROS_INFO("Successfully looked up a transform translation ||x=[%f]||y=[%f]||z=[%f] rotation||x=[%f]||y=[%f]||z=[%f]||w=[%f]",
-//                                                         transformStamped.transform.translation.x,
-//                                                         transformStamped.transform.translation.y,
-//                                                         transformStamped.transform.translation.z,
-//
-//                                                         transformStamped.transform.rotation.x,
-//                                                         transformStamped.transform.rotation.y,
-//                                                         transformStamped.transform.rotation.z,
-//                                                         transformStamped.transform.rotation.w);
-//
-//    }
-//    catch (tf2::TransformException &ex) {
-//      ROS_WARN("%s",ex.what());
-//    }
-//
-//    double r,p,y;
-//    geometry_msgs::Quaternion q = transformStamped.transform.rotation;
-//    tf::Quaternion tfq;
-//    tf::quaternionMsgToTF(q,tfq);
-//    tf::Matrix3x3(tfq).getEulerYPR(y,p,r);
-//    double a1 = angles::to_degrees(y);
-//    double a2 = angles::to_degrees(p);
-//    double a3 = angles::to_degrees(r);
-//
-//    ROS_INFO("Eulerangles form quaternion from transform message y:%f p:%f r:%f",a1,a2,a3);
-//
-//
-//        // rosrun tf tf_echo "tip" "world"
-//
-//        // joint_angle1 = transformStamped.transform.rotation.x;
-//        // joint_angle2 = transformStamped.transform.rotation.y;
-//        // joint_angle3 = transformStamped.transform.rotation.z;
-//
-//        // ROS_INFO("Goal Point is x:[%f]||y:[%f]||z:[%f]",goalpoint.point.x,goalpoint.point.y,goalpoint.point.z);
-//
-// }
 
 
 // Median filter with 3 elements
