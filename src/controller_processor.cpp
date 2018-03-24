@@ -86,7 +86,6 @@ void ControllerProcessor::ConfigCallback(
             config.double_point_y,
             config.double_point_z,
 
-
             config.bool_test,
             config.bool_start_positive,
             config.bool_start_negative,
@@ -108,10 +107,13 @@ void ControllerProcessor::ConfigCallback(
             float max_angle_both_pos=config.max_angle_both_pos;
             float max_angle_both_neg=config.max_angle_both_neg;
 
-            double fk_testing_angle_1 = config.double_param_1;
-            double fk_testing_angle_2 = config.double_param_2;
-            double fk_testing_angle_3 = config.double_param_3;
+            double fk_testing_angle_1 = config.double_param_1*2.0*M_PI/360.0;
+            double fk_testing_angle_2 = config.double_param_2*2.0*M_PI/360.0;
+            double fk_testing_angle_3 = config.double_param_3*2.0*M_PI/360.0;
 
+            double ik_testing_position_x = config.double_point_x;
+            double ik_testing_position_y = config.double_point_y;
+            double ik_testing_position_z = config.double_point_z;
 
             // ROS_INFO("Entered manual control mode");
             // std_msgs::Float64 testangle_1;
@@ -191,6 +193,19 @@ void ControllerProcessor::ConfigCallback(
             // ROS_INFO("%f ||%f|| %f",testmat_1(2,0),testmat_1(2,1),testmat_1(2,2));
 
 
+            Eigen::Vector3f zeroposition = Joint_to_position(fk_testing_angle_1,fk_testing_angle_2,fk_testing_angle_3);
+            ROS_INFO("Input 3 Joints a1 = %f||a2 = %f|| a3 = %f",fk_testing_angle_1*360/2.0/M_PI,fk_testing_angle_2*360/2.0/M_PI,fk_testing_angle_3*360/2.0/M_PI);
+            ROS_INFO("x = %f ||%f|| %f",zeroposition(0),zeroposition(1),zeroposition(2));
+
+
+            // Eigen::Vector3f desired_position(ik_testing_position_x,ik_testing_position_y,ik_testing_position_z);
+            Eigen::Vector3f desired_position(0.567438,0.701206,0.421076);
+            Eigen::Quaternionf orientation_quat(1,0,0,0);
+            Eigen::Vector3f r_init(9/360.0*2.0*M_PI,9/360.0*2.0*M_PI,9/360.0*2.0*M_PI);
+            double epsilon = 0.01;
+            Eigen::Vector3f inversetest = inverse_kinematics(desired_position,orientation_quat,r_init,epsilon);
+            ROS_INFO("Input Position x = %f||y = %f|| z = %f",0.567438,0.701206,0.421076);
+            ROS_INFO("Resulting angles a1 = %f || a2 = %f|| a3 = %f",inversetest(0)*360.0/2.0/M_PI,inversetest(1)*360.0/2.0/M_PI,inversetest(2)*360.0/2.0/M_PI);
 
             if(testbench_settings){
               if(!start_pos && !start_neg && !bool_start_both){
@@ -531,7 +546,7 @@ Eigen::Matrix3f ControllerProcessor::Joint_to_position_jacobian(const double& in
 
   Eigen::Vector3f omega_hat_1(0.0, 0.0, 1.0);
 
-  Eigen::Vector3f omega_hat_2(1.0, 0.0, 0.0);
+  Eigen::Vector3f omega_hat_2(0.0, 1.0, 0.0);
 
   Eigen::Vector3f omega_hat_3(0.0, 0.0, 1.0);
 
@@ -571,7 +586,7 @@ Eigen::Matrix3f ControllerProcessor::Joint_to_rotation_jacobian(const double& in
 
 
   Eigen::Vector3f omega_hat_1(0.0, 0.0, 1.0);
-  Eigen::Vector3f omega_hat_2(1.0, 0.0, 0.0);
+  Eigen::Vector3f omega_hat_2(0.0, 1.0, 0.0);
   Eigen::Vector3f omega_hat_3(0.0, 0.0, 1.0);
 
 
@@ -617,12 +632,12 @@ Eigen::MatrixXf ControllerProcessor::map_loc_rot_vel(const Eigen::Quaternionf& q
   temp_mat_3 = temp_mat+temp_mat_2;
 
 
-  Eigen::MatrixXf mat(3,3);
+  Eigen::MatrixXf mat(4,3);
   mat.resize(4,3);
   mat << -q.x(),-q.y(),-q.z(),
         temp_mat_3(0,0),temp_mat_3(0,1),temp_mat_3(0,2),
         temp_mat_3(1,0),temp_mat_3(1,1),temp_mat_3(1,2),
-        temp_mat_3(2,0),temp_mat_3(0,1),temp_mat_3(2,2);
+        temp_mat_3(2,0),temp_mat_3(2,1),temp_mat_3(2,2);
 
   return mat;
 }
@@ -630,8 +645,8 @@ Eigen::MatrixXf ControllerProcessor::map_loc_rot_vel(const Eigen::Quaternionf& q
 Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r_des,const Eigen::Quaternionf& q_des_IE,const Eigen::Vector3f& r_init,const double& epsilon) {
 
   int iterations = 0;
-  Eigen::Vector3f largenumbers(999999999,999999999,999999999);
-  double max_iterations = 1000;
+  Eigen::Vector3f smallnumber(100,100,100);
+  double max_iterations = 100;
 
   Eigen::Quaternionf q_des_EI = q_des_IE.inverse();
 
@@ -640,7 +655,7 @@ Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r
   double input3 = r_init(2);
 
 
-  while(largenumbers.norm()>epsilon && iterations<max_iterations){
+  while(smallnumber.norm()>epsilon && iterations<max_iterations){
 
     Eigen::Quaternionf q_temp = Joint_to_quaternion(input1,input2,input3);
     Eigen::Quaternionf q_EI = q_temp.inverse();
@@ -659,7 +674,7 @@ Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r
 
     Eigen::Matrix3f Apos = Joint_to_position_jacobian(input1,input2,input3);
     Eigen::MatrixXf Arot(4,3);
-    Arot = Joint_to_rotation_jacobian(input1,input2,input3)*R_trans*map_loc_rot_vel(q_EI);
+    Arot = map_loc_rot_vel(q_EI)*R_trans*Joint_to_rotation_jacobian(input1,input2,input3);
 
     Eigen::MatrixXf A(7,3);
     A << Apos(0,0),Apos(0,1),Apos(0,2),
@@ -670,7 +685,8 @@ Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r
         Arot(2,0),Arot(2,1),Arot(2,2),
         Arot(3,0),Arot(3,1),Arot(3,2);
 
-    Eigen::MatrixXf vec(7);
+    Eigen::VectorXf vec(7);
+
       vec(0) = dr(0);
       vec(1) = dr(1);
       vec(2) = dr(2);
@@ -679,10 +695,11 @@ Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r
       vec(5) = dq(2);
       vec(6) = dq(3);
 
-      // largenumbers = (A)*vec;
-      input1 = largenumbers(0);
-      input2 = largenumbers(1);
-      input3 = largenumbers(2);
+      // largenumbers = A\vec;
+      smallnumber = A.colPivHouseholderQr().solve(vec);
+      input1 = input1+smallnumber(0);
+      input2 = input2+smallnumber(1);
+      input3 = input3+smallnumber(2);
 
       iterations = iterations+1;
   }
@@ -693,13 +710,13 @@ Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r
 
 
   Eigen::Vector3f pos_error = r_des - Joint_to_position(found_angle_1,found_angle_2,found_angle_3);
-  // Eigen::Quaternionf quaterror_temp_1 = Multiply_quaternions(q_des_EI,Joint_to_quaternion(found_angle_1,found_angle_2,found_angle_3));
-  // double quaterror_temp_2 = quaterror_temp_1.norm()
-  // double quat_error = 1-quaterror_temp_2;
+  Eigen::Quaternionf quaterror_temp_1 = Multiply_quaternions(q_des_EI,Joint_to_quaternion(found_angle_1,found_angle_2,found_angle_3));
+  double quaterror_temp_2 = quaterror_temp_1.norm();
+  double quat_error = 1-quaterror_temp_2;
 
   ROS_INFO("Inverse Kinematics terminated after %d iterations",iterations);
-  // ROS_INFO("Postistion error %f",pos_error.norm());
-  // ROS_INFO("Attitude error %f",quat_error);
+  ROS_INFO("Position error %f",pos_error.norm());
+  ROS_INFO("Attitude error %f",quat_error);
 
   Eigen::Vector3f res_vector(found_angle_1,found_angle_2,found_angle_3);
   return res_vector;
