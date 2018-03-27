@@ -24,7 +24,7 @@
 #include "message_filters/subscriber.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include <eigen3/Eigen/Dense>
-
+// #include "matlab.hpp"
 
 #include <iostream>
 #include <vector>
@@ -111,18 +111,18 @@ class ControllerProcessor {
   Eigen::Matrix4f T_clamp2_clamp1(const double& a1);
   Eigen::Matrix4f T_clamp1_tip();
   Eigen::Matrix4f T_world_tip(const double& input3,const double& input2,const double& input1);
-  Eigen::Matrix3f Joint_to_rotation_mat(const double& input1, const double& input2, const double& input3);
-  Eigen::Vector3f Joint_to_position(const double& input1, const double& input2, const double& input3);
-  Eigen::Quaternionf Joint_to_quaternion(const double& input1, const double& input2, const double& input3);
+  Eigen::Matrix3f Joint_to_rotation_mat(const double& input3, const double& input2, const double& input1);
+  Eigen::Vector3f Joint_to_position(const double& input3, const double& input2, const double& input1);
+  Eigen::Quaternionf Joint_to_quaternion(const double& input3, const double& input2, const double& input1);
   Eigen::Matrix3f Quaternion_to_rotation_mat(const Eigen::Quaternionf& q);
   Eigen::Quaternionf Multiply_quaternions(const Eigen::Quaternionf& q1,const Eigen::Quaternionf& q2);
   Eigen::Vector3f Rotate_vec_with_quaternion(const Eigen::Quaternionf& q,const Eigen::Vector3f& v);
-  Eigen::Matrix3f Joint_to_position_jacobian(const double& input1, const double& input2, const double& input3);
-  Eigen::Matrix3f Joint_to_rotation_jacobian(const double& input1, const double& input2, const double& input3);
+  Eigen::Matrix3f Joint_to_position_jacobian(const double& input3, const double& input2, const double& input1);
+  Eigen::Matrix3f Joint_to_rotation_jacobian(const double& input3, const double& input2, const double& input1);
   Eigen::Matrix3f SkewMatrix(const Eigen::Vector3f& v);
   Eigen::MatrixXf map_loc_rot_vel(const Eigen::Quaternionf& q);
-  Eigen::Vector3f inverse_kinematics(const Eigen::Vector3f& r_des,const Eigen::Quaternionf& q_des_IE,const Eigen::Vector3f& r_init,const double& epsilon);
-
+  Eigen::Vector3f inverse_kinematics(const Eigen::Vector3f& r_des,const Eigen::Vector3f& r_init,const float& epsilon);
+  Eigen::Matrix3f psuedoInverseMat(const Eigen::Matrix3f& A,const float& lambda);
   // void Forward_Kinematics(const int& input1, const int& input2, double* output1, double* output2, double* output3);
 
   // Eigen::Vector3d Forward_Kinematics(const double& input1, const double& input2, const double& input3);
