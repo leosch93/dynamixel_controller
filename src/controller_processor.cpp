@@ -76,7 +76,7 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
 // Callback for dynamic reconfigure
 void ControllerProcessor::ConfigCallback(
   dynamixel_controller::controllerConfig &config, uint32_t level) {
-  ROS_INFO("Reconfigure Request: %f %f %f %f %f %f %d %d %d %d %f %f %f %f %f",
+  ROS_INFO("Reconfigure Request: %f %f %f %f %f %f %f %f %f %d %d %d %d %f %f %f %f %f",
 
             config.double_param_1,
             config.double_param_2,
@@ -85,6 +85,10 @@ void ControllerProcessor::ConfigCallback(
             config.double_point_x,
             config.double_point_y,
             config.double_point_z,
+
+            config.double_angle_init_3,
+            config.double_angle_init_2,
+            config.double_angle_init_1,
 
             config.bool_test,
             config.bool_start_positive,
@@ -95,7 +99,6 @@ void ControllerProcessor::ConfigCallback(
             config.max_angle_neg,
             config.max_angle_both_pos,
             config.max_angle_both_neg);
-
 
             bool testbench_settings=config.bool_test;
             bool start_pos=config.bool_start_positive;
@@ -115,15 +118,20 @@ void ControllerProcessor::ConfigCallback(
             double ik_testing_position_y = config.double_point_y;
             double ik_testing_position_z = config.double_point_z;
 
+            double ik_initial_angle_3 = config.double_angle_init_3*2.0*M_PI/360.0;
+            double ik_initial_angle_2 = config.double_angle_init_2*2.0*M_PI/360.0;
+            double ik_initial_angle_1 = config.double_angle_init_1*2.0*M_PI/360.0;
+
+
             Eigen::Vector3f r_des(ik_testing_position_x,ik_testing_position_y,ik_testing_position_z);
             ROS_INFO("Input coordinates to reach x = %f || y = %f || z = %f",r_des(0),r_des(1),r_des(2));
-            Eigen::Vector3f r_init(0.0/360.0*2.0*M_PI,-45.0/360.0*2.0*M_PI,45.0/360.0*2.0*M_PI);
+            Eigen::Vector3f r_init(ik_initial_angle_3,ik_initial_angle_2,ik_initial_angle_1);
             ROS_INFO("Input initial angles a1 = %f || a2 = %f || a3 = %f",r_init(0),r_init(1),r_init(2));
 
             ROS_INFO("Testing IK");
             Eigen::Vector3f q = inverse_kinematics(r_des,r_init,0.01);
-            ROS_INFO("Found angles in rad a1 = %f || a2 = %f || a3 = %f",q(0),q(1),q(2));
-            ROS_INFO("Found angles in deg a1 = %f || a2 = %f || a3 = %f",q(0)/2/M_PI*360,q(1)/2/M_PI*360,q(2)/2/M_PI*360);
+            ROS_INFO("Found angles in rad a3 = %f || a2 = %f || a1 = %f",q(0),q(1),q(2));
+            ROS_INFO("Found angles in deg a3 = %f || a2 = %f || a1 = %f",q(0)/2/M_PI*360,q(1)/2/M_PI*360,q(2)/2/M_PI*360);
 
             // ROS_INFO("Testing Inverse");
             // Eigen::Matrix3d Atest;
@@ -582,9 +590,9 @@ Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r
   float alpha = 0.05; // Update rate
 
   Eigen::Vector3f q = r_init; // current
-  ROS_INFO("q start %f %f %f",q(0),q(1),q(2));
+  // ROS_INFO("q start %f %f %f",q(0),q(1),q(2));
   Eigen::Vector3f dr(2,2,2); // initialize error
-  ROS_INFO("dr %f %f %f",dr(0),dr(1),dr(2));
+  // ROS_INFO("dr %f %f %f",dr(0),dr(1),dr(2));
   Eigen::Matrix3f I_J;
   Eigen::Matrix3f I_J_pinv;
   Eigen::Vector3f r_current;
@@ -592,15 +600,15 @@ Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r
 
   while(iterations==0 || dr.norm()>epsilon && iterations < max_iterations) {
       I_J = Joint_to_position_jacobian(q(0),q(1),q(2)); // Evaluate current jacobians
-      ROS_INFO("I_J");
-      ROS_INFO("%f || %f || %f",I_J(0,0),I_J(0,1),I_J(0,2));
-      ROS_INFO("%f || %f || %f",I_J(1,0),I_J(1,1),I_J(1,2));
-      ROS_INFO("%f || %f || %f",I_J(2,0),I_J(2,1),I_J(2,2));
+      // ROS_INFO("I_J");
+      // ROS_INFO("%f || %f || %f",I_J(0,0),I_J(0,1),I_J(0,2));
+      // ROS_INFO("%f || %f || %f",I_J(1,0),I_J(1,1),I_J(1,2));
+      // ROS_INFO("%f || %f || %f",I_J(2,0),I_J(2,1),I_J(2,2));
       I_J_pinv = psuedoInverseMat(I_J,lambda); // Take the psuedo inverse
-      ROS_INFO("I_J_pinv");
-      ROS_INFO("%f || %f || %f",I_J_pinv(0,0),I_J_pinv(0,1),I_J_pinv(0,2));
-      ROS_INFO("%f || %f || %f",I_J_pinv(1,0),I_J_pinv(1,1),I_J_pinv(1,2));
-      ROS_INFO("%f || %f || %f",I_J_pinv(2,0),I_J_pinv(2,1),I_J_pinv(2,2));
+      // ROS_INFO("I_J_pinv");
+      // ROS_INFO("%f || %f || %f",I_J_pinv(0,0),I_J_pinv(0,1),I_J_pinv(0,2));
+      // ROS_INFO("%f || %f || %f",I_J_pinv(1,0),I_J_pinv(1,1),I_J_pinv(1,2));
+      // ROS_INFO("%f || %f || %f",I_J_pinv(2,0),I_J_pinv(2,1),I_J_pinv(2,2));
       r_current = Joint_to_position(q(0),q(1),q(2)); // current position
       // ROS_INFO("r_current %f || %f || %f",r_current(0),r_current(1),r_current(2));
       dr = r_des-r_current; // position error
@@ -621,25 +629,25 @@ Eigen::Vector3f ControllerProcessor::inverse_kinematics(const Eigen::Vector3f& r
 Eigen::Matrix3f ControllerProcessor::psuedoInverseMat(const Eigen::Matrix3f& A,const float& lambda) {
 
     Eigen::Matrix3f identiymatrix = Eigen::Matrix3f::Identity();
-    ROS_INFO("A");
-    ROS_INFO("%f || %f || %f",A(0,0),A(0,1),A(0,2));
-    ROS_INFO("%f || %f || %f",A(1,0),A(1,1),A(1,2));
-    ROS_INFO("%f || %f || %f",A(2,0),A(2,1),A(2,2));
+    // ROS_INFO("A");
+    // ROS_INFO("%f || %f || %f",A(0,0),A(0,1),A(0,2));
+    // ROS_INFO("%f || %f || %f",A(1,0),A(1,1),A(1,2));
+    // ROS_INFO("%f || %f || %f",A(2,0),A(2,1),A(2,2));
     Eigen::Matrix3f A_transposed = A.transpose();
-    ROS_INFO("A_transposed");
-    ROS_INFO("%f || %f || %f",A_transposed(0,0),A_transposed(0,1),A_transposed(0,2));
-    ROS_INFO("%f || %f || %f",A_transposed(1,0),A_transposed(1,1),A_transposed(1,2));
-    ROS_INFO("%f || %f || %f",A_transposed(2,0),A_transposed(2,1),A_transposed(2,2));
+    // ROS_INFO("A_transposed");
+    // ROS_INFO("%f || %f || %f",A_transposed(0,0),A_transposed(0,1),A_transposed(0,2));
+    // ROS_INFO("%f || %f || %f",A_transposed(1,0),A_transposed(1,1),A_transposed(1,2));
+    // ROS_INFO("%f || %f || %f",A_transposed(2,0),A_transposed(2,1),A_transposed(2,2));
     Eigen::Matrix3f temp_1 = lambda*lambda*identiymatrix;
-    ROS_INFO("temp_1");
-    ROS_INFO("%f || %f || %f",temp_1(0,0),temp_1(0,1),temp_1(0,2));
-    ROS_INFO("%f || %f || %f",temp_1(1,0),temp_1(1,1),temp_1(1,2));
-    ROS_INFO("%f || %f || %f",temp_1(2,0),temp_1(2,1),temp_1(2,2));
+    // ROS_INFO("temp_1");
+    // ROS_INFO("%f || %f || %f",temp_1(0,0),temp_1(0,1),temp_1(0,2));
+    // ROS_INFO("%f || %f || %f",temp_1(1,0),temp_1(1,1),temp_1(1,2));
+    // ROS_INFO("%f || %f || %f",temp_1(2,0),temp_1(2,1),temp_1(2,2));
     Eigen::Matrix3f temp_2 = A*A_transposed+temp_1;
-    ROS_INFO("temp_2");
-    ROS_INFO("%f || %f || %f",temp_2(0,0),temp_2(0,1),temp_2(0,2));
-    ROS_INFO("%f || %f || %f",temp_2(1,0),temp_2(1,1),temp_2(1,2));
-    ROS_INFO("%f || %f || %f",temp_2(2,0),temp_2(2,1),temp_2(2,2));
+    // ROS_INFO("temp_2");
+    // ROS_INFO("%f || %f || %f",temp_2(0,0),temp_2(0,1),temp_2(0,2));
+    // ROS_INFO("%f || %f || %f",temp_2(1,0),temp_2(1,1),temp_2(1,2));
+    // ROS_INFO("%f || %f || %f",temp_2(2,0),temp_2(2,1),temp_2(2,2));
 
     // Eigen::Matrix3d pinv = temp_2.jacobiSvd().solve(A_transposed);
     // ROS_INFO("SVD inverse");
@@ -690,10 +698,10 @@ Eigen::Matrix3f ControllerProcessor::psuedoInverseMat(const Eigen::Matrix3f& A,c
     // ROS_INFO("%f || %f || %f",pinv8(2,0),pinv8(2,1),pinv8(2,2));
 
     Eigen::Matrix3f pinv43 = temp_2.inverse()*A;
-    ROS_INFO("inverse inverse");
-    ROS_INFO("%f || %f || %f",pinv43(0,0),pinv43(0,1),pinv43(0,2));
-    ROS_INFO("%f || %f || %f",pinv43(1,0),pinv43(1,1),pinv43(1,2));
-    ROS_INFO("%f || %f || %f",pinv43(2,0),pinv43(2,1),pinv43(2,2));
+    // ROS_INFO("inverse inverse");
+    // ROS_INFO("%f || %f || %f",pinv43(0,0),pinv43(0,1),pinv43(0,2));
+    // ROS_INFO("%f || %f || %f",pinv43(1,0),pinv43(1,1),pinv43(1,2));
+    // ROS_INFO("%f || %f || %f",pinv43(2,0),pinv43(2,1),pinv43(2,2));
 
     return pinv43;
   }
@@ -709,14 +717,8 @@ Eigen::Matrix3f ControllerProcessor::psuedoInverseMat(const Eigen::Matrix3f& A,c
 
 
 
-
-
-
-
-
-
 // Median filter with 3 elements
-float median_n_3(float a,float b,float c){
+float ControllerProcessor::median_n_3(const float& a,const float& b,const float& c) {
   float median;
 
   if ((a<=b) && (a<=c))  {
@@ -730,7 +732,26 @@ float median_n_3(float a,float b,float c){
 }
 
 
-void ControllerProcessor::CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1){
+
+
+
+//
+// // Median filter with 3 elements
+// float median_n_3(float a,float b,float c) {
+//   float median;
+//
+//   if ((a<=b) && (a<=c))  {
+//     median = (b<=c) ? b : c;
+//   } else if ((b<=a) && (b<=c)) {
+//     median = (a<=c) ? a : c;
+//   } else {
+//     median = (a<=b) ? a : b;
+//   }
+//   return median;
+// }
+
+
+void ControllerProcessor::CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1) {
 //float state_1 = dyn_state_1.current_pos;
 
   if(only_once_dyn_1_ == true){
@@ -775,14 +796,24 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
 
 
 
-  // Store the last 3 angles
+  // Store the last 3 angles of encoder
   angle_val_e1_3_ = angle_val_e1_2_;
   angle_val_e1_2_ = angle_val_e1_1_;
   angle_val_e1_1_ = angle_deg_a1;
 
+
+  // Store last 3 angles of Dynamixel
+  dyn_1_state_val_3_ = dyn_1_state_val_2_;
+  dyn_1_state_val_2_ = dyn_1_state_val_1_;
+  dyn_1_state_val_1_ = dynam_angle_1_;
+
+
+
+
+
   // Calculate median from the last three angle values
   float median_val_e1 = median_n_3(angle_val_e1_1_,angle_val_e1_2_,angle_val_e1_3_);
-
+  float median_val_state1 = median_n_3(dyn_1_state_val_1_,dyn_1_state_val_2_,dyn_1_state_val_3_);
 
 
   if (offset_calculated_1 == false){
@@ -812,30 +843,30 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
     }
 
 
-    enc_1_angle_filt_offset_ = median_val_e1-offset_angle_a_1_;
-    ROS_INFO("Encoder 1 filtered and offset corrected: [%f]",enc_1_angle_filt_offset_);
+  enc_1_angle_filt_offset_ = median_val_e1-offset_angle_a_1_;
+  ROS_INFO("Encoder 1 filtered and offset corrected: [%f]",enc_1_angle_filt_offset_);
 
-    // Calculate angle difference
-    angle_diff_a_1_ = enc_1_angle_filt_offset_-dynam_angle_1_;
+  // Calculate angle difference
+  angle_diff_a_1_ = enc_1_angle_filt_offset_-median_val_state1;
 
-    // ROS_INFO("enc_1_angle_filt_offset_ = [%f]",enc_1_angle_filt_offset_);
-    // ROS_INFO("dynam_angle_1_ = [%f]",dynam_angle_1_);
-    ROS_INFO("angle_diff_a_1_ = [%f]",angle_diff_a_1_);
+  // ROS_INFO("enc_1_angle_filt_offset_ = [%f]",enc_1_angle_filt_offset_);
+  // ROS_INFO("dynam_angle_1_ = [%f]",dynam_angle_1_);
+  ROS_INFO("angle_diff_a_1_ = [%f]",angle_diff_a_1_);
 
-    // Calculate torque estimate
-    t_est_1_ = angle_diff_a_1_*k_1_;
-    ROS_INFO("Torque estimate in Nm = [%f]",t_est_1_);
+  // Calculate torque estimate
+  t_est_1_ = angle_diff_a_1_*k_1_;
+  ROS_INFO("Torque estimate in Nm = [%f]",t_est_1_);
 
-    // Create message from value
-    std_msgs::Float64 t_est_1_msg;
-    std_msgs::Float64 angle_1_deg_filtered_o_msg;
+  // Create message from value
+  std_msgs::Float64 t_est_1_msg;
+  std_msgs::Float64 angle_1_deg_filtered_o_msg;
 
-    t_est_1_msg.data = t_est_1_;
-    angle_1_deg_filtered_o_msg.data = enc_1_angle_filt_offset_;
+  t_est_1_msg.data = t_est_1_;
+  angle_1_deg_filtered_o_msg.data = enc_1_angle_filt_offset_;
 
-    // Publish
-    pub_angle_1_.publish(t_est_1_msg);
-    pub_angle_1_filtered_o_.publish(angle_1_deg_filtered_o_msg);
+  // Publish
+  pub_angle_1_.publish(t_est_1_msg);
+  pub_angle_1_filtered_o_.publish(angle_1_deg_filtered_o_msg);
 
 
 } // namespace Callback 1
@@ -854,13 +885,23 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
   // Calculate andle from pulsewidth
   float angle_deg_a3 = ((pulsewidth_e3*uc*4098/(period_e3*uc))-1)*360/4096;
 
-  // Store the last 3 angles
+  // Store the last 3 angles of encoder
   angle_val_e3_3_ = angle_val_e3_2_;
   angle_val_e3_2_ = angle_val_e3_1_;
   angle_val_e3_1_ = angle_deg_a3;
 
+
+  // Store last 3 angles of Dynamixel
+  dyn_3_state_val_3_ = dyn_3_state_val_2_;
+  dyn_3_state_val_2_ = dyn_3_state_val_1_;
+  dyn_3_state_val_1_ = dynam_angle_3_;
+
+
+
+
   // Calculate median from the last three angle values
   float median_val_e3 = median_n_3(angle_val_e3_1_,angle_val_e3_2_,angle_val_e3_3_);
+  float median_val_state3 = median_n_3(dyn_3_state_val_1_,dyn_3_state_val_2_,dyn_3_state_val_3_);
 
 
 
@@ -899,7 +940,7 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
 
 
   // Calculate angle difference
-  angle_diff_a_3_ = enc_3_angle_filt_offset_-dynam_angle_3_;
+  angle_diff_a_3_ = enc_3_angle_filt_offset_-median_val_state3;
   // ROS_INFO("enc_3_angle_filt_offset_ = [%f]",enc_3_angle_filt_offset_);
   // ROS_INFO("dynam_angle_3_ = [%f]",dynam_angle_3_);
   // ROS_INFO("angle_diff_a_3_ = [%f]",angle_diff_a_3_);

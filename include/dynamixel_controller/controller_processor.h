@@ -98,6 +98,7 @@ class ControllerProcessor {
    * \brief Callback for the encoder data.
    * @param [in] img_msg Ros message storing the encoder data.
    */
+  float median_n_3(const float& a,const float& b,const float& c);
 
   void CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1);
   void CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3);
@@ -123,14 +124,11 @@ class ControllerProcessor {
   Eigen::MatrixXf map_loc_rot_vel(const Eigen::Quaternionf& q);
   Eigen::Vector3f inverse_kinematics(const Eigen::Vector3f& r_des,const Eigen::Vector3f& r_init,const float& epsilon);
   Eigen::Matrix3f psuedoInverseMat(const Eigen::Matrix3f& A,const float& lambda);
-  // void Forward_Kinematics(const int& input1, const int& input2, double* output1, double* output2, double* output3);
-
-  // Eigen::Vector3d Forward_Kinematics(const double& input1, const double& input2, const double& input3);
 
 
-  // void Forward_Kinematics(const int test);
-  // void Get_Jacobian(const geometry_msgs::PointStamped& goalpoint,,,);
-  // void Inverse_Kinematics(const geometry_msgs::PointStamped& goalpoint,,,);
+
+
+
 
 
   void ConfigCallback(dynamixel_controller::controllerConfig &config, uint32_t level);
@@ -192,6 +190,14 @@ class ControllerProcessor {
   float angle_val_e3_1_{};
   float angle_val_e3_2_{};
   float angle_val_e3_3_{};
+
+  float dyn_1_state_val_1_{};
+  float dyn_1_state_val_2_{};
+  float dyn_1_state_val_3_{};
+
+  float dyn_3_state_val_1_{};
+  float dyn_3_state_val_2_{};
+  float dyn_3_state_val_3_{};
 
   //ros::Time start_;
   bool only_once_enc_1_1_ = true;
