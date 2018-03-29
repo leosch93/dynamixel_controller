@@ -76,7 +76,7 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
 // Callback for dynamic reconfigure
 void ControllerProcessor::ConfigCallback(
   dynamixel_controller::controllerConfig &config, uint32_t level) {
-  ROS_INFO("Reconfigure Request: %f %f %f %f %f %f %f %f %f %d %d %d %d %d %d %f %f %f %f %f",
+  ROS_INFO("Reconfigure Request: %f %f %f %f %f %f %f %f %f % d %d %d %d %d %d %d %f %f %f %f %f",
 
             config.double_param_1,
             config.double_param_2,
@@ -89,6 +89,8 @@ void ControllerProcessor::ConfigCallback(
             config.double_angle_init_3,
             config.double_angle_init_2,
             config.double_angle_init_1,
+
+            config.bool_fk,
 
             config.bool_ik,
 
@@ -104,6 +106,7 @@ void ControllerProcessor::ConfigCallback(
             config.max_angle_both_pos,
             config.max_angle_both_neg);
 
+            bool forward_kin=config.bool_fk;
             bool inverse_kin=config.bool_ik;
             bool homeing_state=config.bool_home;
 
@@ -129,27 +132,6 @@ void ControllerProcessor::ConfigCallback(
             double ik_initial_angle_2 = config.double_angle_init_2*2.0*M_PI/360.0;
             double ik_initial_angle_1 = config.double_angle_init_1*2.0*M_PI/360.0;
 
-            if(!inverse_kin) {
-              std_msgs::Float64 angle_1_temp;
-              angle_1_temp.data = -M_PI/4; // Make shure to go arround top of the dynamixel
-              pub_cmd_1_.publish(angle_1_temp);
-              ros::Duration(0.5).sleep(); // sleep for half a second
-            }
-            std_msgs::Float64 angle_3;
-            std_msgs::Float64 angle_2;
-            std_msgs::Float64 angle_1;
-
-            angle_3.data = fk_testing_angle_3;
-            angle_2.data = fk_testing_angle_2;
-            angle_1.data = fk_testing_angle_1;
-
-            // Publish
-            pub_cmd_3_.publish(angle_3);
-            pub_cmd_2_.publish(angle_2);
-            pub_cmd_1_.publish(angle_1);
-
-            ROS_INFO("Published angles in deg a3 = %f || a2 = %f || a1 = %f",angle_3.data/2.0/M_PI*360.0,angle_2.data/2.0/M_PI*360.0,angle_1.data/2.0/M_PI*360.0);
-
 
             // ROS_INFO("Testing Inverse");
             // Eigen::Matrix3d Atest;
@@ -158,13 +140,39 @@ void ControllerProcessor::ConfigCallback(
             //         7.0,8.0,9.0;
             // Eigen::Matrix3d A_inverse = psuedoInverseMat(Atest,0.001);
 
+
+
+
+
+            if(forward_kin) {
+              std_msgs::Float64 angle_1_temp;
+              angle_1_temp.data = -M_PI/4; // Make shure to go arround top of the dynamixel
+              pub_cmd_1_.publish(angle_1_temp);
+              ros::Duration(0.5).sleep(); // sleep for half a second
+
+              std_msgs::Float64 angle_3;
+              std_msgs::Float64 angle_2;
+              std_msgs::Float64 angle_1;
+
+              angle_3.data = fk_testing_angle_3;
+              angle_2.data = fk_testing_angle_2;
+              angle_1.data = fk_testing_angle_1;
+
+              // Publish
+              pub_cmd_3_.publish(angle_3);
+              pub_cmd_2_.publish(angle_2);
+              pub_cmd_1_.publish(angle_1);
+
+              ROS_INFO("FK published angles in deg a3 = %f || a2 = %f || a1 = %f",angle_3.data/2.0/M_PI*360.0,angle_2.data/2.0/M_PI*360.0,angle_1.data/2.0/M_PI*360.0);
+            }
+
             if(inverse_kin) {
               Eigen::Vector3f r_des(ik_testing_position_x,ik_testing_position_y,ik_testing_position_z);
               ROS_INFO("Input coordinates to reach x = %f || y = %f || z = %f",r_des(0),r_des(1),r_des(2));
               Eigen::Vector3f r_init(ik_initial_angle_3,ik_initial_angle_2,ik_initial_angle_1);
               ROS_INFO("Input initial angles a1 = %f || a2 = %f || a3 = %f",r_init(0),r_init(1),r_init(2));
 
-              ROS_INFO("Testing IK");
+              ROS_INFO("Inverse Kinematics");
               Eigen::Vector3f q = inverse_kinematics(r_des,r_init,0.01);
               ROS_INFO("Found angles in rad a3 = %f || a2 = %f || a1 = %f",q(0),q(1),q(2));
               ROS_INFO("Found angles in deg a3 = %f || a2 = %f || a1 = %f",q(0)/2/M_PI*360,q(1)/2/M_PI*360,q(2)/2/M_PI*360);
@@ -186,7 +194,7 @@ void ControllerProcessor::ConfigCallback(
               pub_cmd_3_.publish(ik_angle_3);
               pub_cmd_2_.publish(ik_angle_2);
               pub_cmd_1_.publish(ik_angle_1);
-              ROS_INFO("Published commands a3 = %f || a2 = %f || a1 = %f",ik_angle_3.data,ik_angle_2.data,ik_angle_1.data);
+              ROS_INFO("IK published commands a3 = %f || a2 = %f || a1 = %f",ik_angle_3.data/2.0/M_PI*360.0,ik_angle_2.data/2.0/M_PI*360.0,ik_angle_1.data/2.0/M_PI*360.0);
             }
 
             if(homeing_state) {
@@ -209,7 +217,7 @@ void ControllerProcessor::ConfigCallback(
               ros::Duration(0.5).sleep(); // sleep for half a second
               pub_cmd_1_.publish(home_angle_1);
 
-              ROS_INFO("Published commands a3 = %f || a2 = %f || a1 = %f",home_angle_3.data,home_angle_2.data,home_angle_1.data);
+              ROS_INFO("Homeing state published commands a3 = %f || a2 = %f || a1 = %f",home_angle_3.data/2.0/M_PI*360.0,home_angle_2.data/2.0/M_PI*360.0,home_angle_1.data/2.0/M_PI*360.0);
 
 
             }
