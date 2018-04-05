@@ -11,6 +11,7 @@
 #include <ros/time.h>
 #include <geometry_msgs/PointStamped.h>
 #include <dynamixel_msgs/JointState.h>
+#include <trajectory_msgs/JointTrajectory.h>
 #include "tf/tf.h"
 #include <algorithm>
 #include <cmath>
@@ -48,6 +49,7 @@ static const std::string kDefaultSubTopic_3_dyn    = "/default_sub_3_dyn";
 
 static const std::string kDefaultObjectsPubTopic_1 = "/default_pub1";
 static const std::string kDefaultObjectsPubTopic_2 = "/default_pub2";
+static const std::string kDefaultObjectsPubTopic_2_hebi = "/default_pub2_hebi";
 static const std::string kDefaultObjectsPubTopic_3 = "/default_pub3";
 
 static const std::string kDefaultPubTopic_1 = "/default_pub1";
@@ -62,11 +64,10 @@ static constexpr int kDefaultSubQueueSize_3   = 1;
 static constexpr int kDefaultSubQueueSize_1_dyn  = 1;
 static constexpr int kDefaultSubQueueSize_3_dyn  = 1;
 
-static constexpr int kDefaultSubQueueSize_3_tf  = 1;
-static constexpr int kDefaultSubQueueSize_3_tf_static  = 1;
 
 static constexpr int kDefaultObjectsPubQueueSize_1 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_2 = 1;
+static constexpr int kDefaultObjectsPubQueueSize_2_hebi = 1;
 static constexpr int kDefaultObjectsPubQueueSize_3 = 1;
 
 static constexpr int kDefaultPubQueueSize_1 = 1;
@@ -158,6 +159,7 @@ class ControllerProcessor {
   /** \brief Ros Publisher for the commands. */
   ros::Publisher pub_cmd_1_;
   ros::Publisher pub_cmd_2_;
+  ros::Publisher pub_cmd_2_hebi_;
   ros::Publisher pub_cmd_3_;
 
   /** \brief Ros Publisher for the calculated angles. */

@@ -45,6 +45,10 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
       parameter_.pub_rostopic_command_2,
       parameter_.queue_size_pub_command_2);
 
+  pub_cmd_2_hebi_ = nh_.advertise<trajectory_msgs::JointTrajectory>(
+      parameter_.pub_rostopic_command_2_hebi,
+      parameter_.queue_size_pub_command_2_hebi);
+
   pub_cmd_3_ = nh_.advertise<std_msgs::Float64>(
       parameter_.pub_rostopic_command_3,
       parameter_.queue_size_pub_command_3);
@@ -150,6 +154,13 @@ void ControllerProcessor::ConfigCallback(
               pub_cmd_1_.publish(angle_1_temp);
               ros::Duration(0.5).sleep(); // sleep for half a second
 
+              trajectory_msgs::JointTrajectory angle_2_msg;
+              //  HEBI
+              angle_2_msg.joint_names.resize(1);
+              angle_2_msg.joint_names[0] = "X5-4/M1";
+              angle_2_msg.points.resize(1);
+              angle_2_msg.points[0].positions.push_back(fk_testing_angle_2);
+
               std_msgs::Float64 angle_3;
               std_msgs::Float64 angle_2;
               std_msgs::Float64 angle_1;
@@ -164,6 +175,7 @@ void ControllerProcessor::ConfigCallback(
               pub_cmd_1_.publish(angle_1);
 
               ROS_INFO("FK published angles in deg a3 = %f || a2 = %f || a1 = %f",angle_3.data/2.0/M_PI*360.0,angle_2.data/2.0/M_PI*360.0,angle_1.data/2.0/M_PI*360.0);
+              // ROS_INFO("Published angle HEBI a1 = %f",angle_2_msg.points[0].positions/2.0/M_PI*360.0);
             }
 
             if(inverse_kin) {
