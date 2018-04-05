@@ -158,10 +158,6 @@ void ControllerProcessor::ConfigCallback(
 
 
             if(forward_kin) {
-              std_msgs::Float64 angle_1_temp;
-              angle_1_temp.data = -M_PI/4; // Make shure to go arround top of the dynamixel
-              pub_cmd_1_.publish(angle_1_temp);
-              ros::Duration(0.5).sleep(); // sleep for half a second
 
 
               std_msgs::Float64 angle_3;
@@ -177,7 +173,7 @@ void ControllerProcessor::ConfigCallback(
               angle_2_msg.joint_names.resize(1);
               angle_2_msg.joint_names[0] = "X5-4/M1";
               angle_2_msg.points.resize(1);
-              angle_2_msg.points[0].positions.push_back(fk_testing_angle_2);
+              angle_2_msg.points[0].positions.push_back(-fk_testing_angle_2);
               // Dynamixel
               std_msgs::Float64 angle_3_dyn;
               std_msgs::Float64 angle_1_dyn;
@@ -210,9 +206,9 @@ void ControllerProcessor::ConfigCallback(
               ROS_INFO("Input initial angles a1 = %f || a2 = %f || a3 = %f",r_init(0),r_init(1),r_init(2));
 
               ROS_INFO("Inverse Kinematics");
-              Eigen::Vector3f q = inverse_kinematics(r_des,r_init,0.01);
+              Eigen::Vector3f q = inverse_kinematics(r_des,r_init,0.001);
               ROS_INFO("Found angles in rad a3 = %f || a2 = %f || a1 = %f",q(0),q(1),q(2));
-              ROS_INFO("Found angles in deg a3 = %f || a2 = %f || a1 = %f",q(0)/2/M_PI*360,q(1)/2/M_PI*360,q(2)/2/M_PI*360);
+              ROS_INFO("Found angles in deg a3 = %f || a2 = %f || a1 = %f",q(0)/2.0/M_PI*360.0,q(1)/2.0/M_PI*360.0,q(2)/2.0/M_PI*360.0);
 
 
               ROS_INFO("Now publishing joint commands");
@@ -223,6 +219,19 @@ void ControllerProcessor::ConfigCallback(
               std_msgs::Float64 ik_angle_2;
               std_msgs::Float64 ik_angle_1;
 
+              //  HEBI
+              trajectory_msgs::JointTrajectory angle_2_msg;
+              angle_2_msg.joint_names.resize(1);
+              angle_2_msg.joint_names[0] = "X5-4/M1";
+              angle_2_msg.points.resize(1);
+              angle_2_msg.points[0].positions.push_back(-q(1));
+              // Dynamixel
+              std_msgs::Float64 angle_3_dyn;
+              std_msgs::Float64 angle_1_dyn;
+              angle_3_dyn.data = q(0)+M_PI;
+              angle_1_dyn.data =  q(2)+M_PI;
+
+
               ik_angle_3.data = q(0);
               ik_angle_2.data = q(1);
               ik_angle_1.data = q(2);
@@ -231,6 +240,11 @@ void ControllerProcessor::ConfigCallback(
               pub_cmd_3_.publish(ik_angle_3);
               pub_cmd_2_.publish(ik_angle_2);
               pub_cmd_1_.publish(ik_angle_1);
+
+              pub_cmd_3_dynamixel_.publish(angle_3_dyn);
+              pub_cmd_2_hebi_.publish(angle_2_msg);
+              pub_cmd_1_dynamixel_.publish(angle_1_dyn);
+
               ROS_INFO("IK published commands a3 = %f || a2 = %f || a1 = %f",ik_angle_3.data/2.0/M_PI*360.0,ik_angle_2.data/2.0/M_PI*360.0,ik_angle_1.data/2.0/M_PI*360.0);
             }
 
@@ -239,20 +253,36 @@ void ControllerProcessor::ConfigCallback(
               // Create message
               std_msgs::Float64 home_angle_3;
               std_msgs::Float64 home_angle_2;
-              std_msgs::Float64 home_angle_1_temp;
               std_msgs::Float64 home_angle_1;
 
               home_angle_3.data = -3.0*M_PI/4.0;
-              home_angle_2.data = M_PI/4.0-M_PI/12;
-              home_angle_1_temp.data = -M_PI/4; // Make shure to go arround top of the dynamixel
-              home_angle_1.data = -M_PI/4-M_PI+M_PI/12;
+              home_angle_2.data = -3.0*M_PI/4.0;
+              home_angle_1.data = M_PI;
+
+              trajectory_msgs::JointTrajectory angle_2_msg;
+              angle_2_msg.joint_names.resize(1);
+              angle_2_msg.joint_names[0] = "X5-4/M1";
+              angle_2_msg.points.resize(1);
+              // neg
+              angle_2_msg.points[0].positions.push_back(-(-3.0*M_PI/4.0));
+              // Dynamixel
+              std_msgs::Float64 angle_3_dyn;
+              std_msgs::Float64 angle_1_dyn;
+              angle_3_dyn.data = -3.0*M_PI/4.0+M_PI;
+              angle_1_dyn.data =  M_PI;
+
+
+
+
 
               // Publish
               pub_cmd_3_.publish(home_angle_3);
               pub_cmd_2_.publish(home_angle_2);
-              pub_cmd_1_.publish(home_angle_1_temp);
-              ros::Duration(0.5).sleep(); // sleep for half a second
               pub_cmd_1_.publish(home_angle_1);
+
+              pub_cmd_3_dynamixel_.publish(angle_3_dyn);
+              pub_cmd_2_hebi_.publish(angle_2_msg);
+              pub_cmd_1_dynamixel_.publish(angle_1_dyn);
 
               ROS_INFO("Homeing state published commands a3 = %f || a2 = %f || a1 = %f",home_angle_3.data/2.0/M_PI*360.0,home_angle_2.data/2.0/M_PI*360.0,home_angle_1.data/2.0/M_PI*360.0);
 
@@ -413,7 +443,7 @@ Eigen::Matrix4f ControllerProcessor::T_world_dynamixel_to_hebi(const double& a3)
 }
 
 Eigen::Matrix4f ControllerProcessor::T_dynamixel_to_hebi_clamp2(const double& a2) {
-  double a2_offset = 135.0/360.0*2.0*M_PI;
+  double a2_offset = 112.5/360.0*2.0*M_PI;
   double a2_fix = -90.0/360.0*2.0*M_PI;
   Eigen::Matrix3f Rx;
     Rx << 1, 0, 0,
