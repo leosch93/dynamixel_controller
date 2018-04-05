@@ -14,22 +14,25 @@ sub_rostopic_dynamixel_3: /arm/joint3_position_controller/state           # subs
 queue_size_sub_dynamixel_3: 1                                # queue size of the subscriber
 
 
-# sub_rostopic_tf: /tf                                # subscribed rostopic
-# queue_size_sub_tf: 1                                # queue size of the subscriber
-
-# sub_rostopic_tf_static: /tf_static                  # subscribed rostopic
-# queue_size_sub_tf_static: 1                         # queue size of the subscriber
-
 
 ### PUBLISHER AND QUEUE SIZES
 pub_rostopic_command_1: /arm/joint1_position_controller/command     # published rostopic
 queue_size_pub_command_1: 1                            # queue size of the publisher
 
+pub_rostopic_command_1_dynamixel: /arm/joint1_position_controller_dynamixel/command     # published rostopic
+queue_size_pub_command_1_dynamixel: 1                            # queue size of the publisher
+
 pub_rostopic_command_2: /arm/joint2_position_controller/command     # published rostopic
 queue_size_pub_command_2: 1                            # queue size of the publisher
 
+pub_rostopic_command_2_hebi: /arm/joint2_position_controller_hebi/command     # published rostopic
+queue_size_pub_command_2_hebi: 1                            # queue size of the publisher
+
 pub_rostopic_command_3: /arm/joint3_position_controller/command     # published rostopic
 queue_size_pub_command_3: 1                            # queue size of the publisher
+
+pub_rostopic_command_3_dynamixel: /arm/joint3_position_controller_dynamixel/command     # published rostopic
+queue_size_pub_command_3_dynamixel: 1                            # queue size of the publisher
 
 
 pub_rostopic_1: /actuator_1/torque_estimate                       # published rostopic

@@ -41,6 +41,10 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
       parameter_.pub_rostopic_command_1,
       parameter_.queue_size_pub_command_1);
 
+  pub_cmd_1_dynamixel_ = nh_.advertise<std_msgs::Float64>(
+      parameter_.pub_rostopic_command_1_dynamixel,
+      parameter_.queue_size_pub_command_1_dynamixel);
+
   pub_cmd_2_ = nh_.advertise<std_msgs::Float64>(
       parameter_.pub_rostopic_command_2,
       parameter_.queue_size_pub_command_2);
@@ -52,6 +56,12 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
   pub_cmd_3_ = nh_.advertise<std_msgs::Float64>(
       parameter_.pub_rostopic_command_3,
       parameter_.queue_size_pub_command_3);
+
+  pub_cmd_3_dynamixel_ = nh_.advertise<std_msgs::Float64>(
+      parameter_.pub_rostopic_command_3_dynamixel,
+      parameter_.queue_size_pub_command_3_dynamixel);
+
+
 
 
   // Angles
@@ -147,19 +157,12 @@ void ControllerProcessor::ConfigCallback(
 
 
 
-
             if(forward_kin) {
               std_msgs::Float64 angle_1_temp;
               angle_1_temp.data = -M_PI/4; // Make shure to go arround top of the dynamixel
               pub_cmd_1_.publish(angle_1_temp);
               ros::Duration(0.5).sleep(); // sleep for half a second
 
-              trajectory_msgs::JointTrajectory angle_2_msg;
-              //  HEBI
-              angle_2_msg.joint_names.resize(1);
-              angle_2_msg.joint_names[0] = "X5-4/M1";
-              angle_2_msg.points.resize(1);
-              angle_2_msg.points[0].positions.push_back(fk_testing_angle_2);
 
               std_msgs::Float64 angle_3;
               std_msgs::Float64 angle_2;
@@ -169,13 +172,35 @@ void ControllerProcessor::ConfigCallback(
               angle_2.data = fk_testing_angle_2;
               angle_1.data = fk_testing_angle_1;
 
+              //  HEBI
+              trajectory_msgs::JointTrajectory angle_2_msg;
+              angle_2_msg.joint_names.resize(1);
+              angle_2_msg.joint_names[0] = "X5-4/M1";
+              angle_2_msg.points.resize(1);
+              angle_2_msg.points[0].positions.push_back(fk_testing_angle_2);
+              // Dynamixel
+              std_msgs::Float64 angle_3_dyn;
+              std_msgs::Float64 angle_1_dyn;
+              angle_3_dyn.data = fk_testing_angle_3+M_PI;
+              angle_1_dyn.data = fk_testing_angle_1+M_PI;
+
+
+
               // Publish
               pub_cmd_3_.publish(angle_3);
               pub_cmd_2_.publish(angle_2);
               pub_cmd_1_.publish(angle_1);
 
+              pub_cmd_3_dynamixel_.publish(angle_3_dyn);
+              pub_cmd_2_hebi_.publish(angle_2_msg);
+              pub_cmd_1_dynamixel_.publish(angle_1_dyn);
+
+
+
               ROS_INFO("FK published angles in deg a3 = %f || a2 = %f || a1 = %f",angle_3.data/2.0/M_PI*360.0,angle_2.data/2.0/M_PI*360.0,angle_1.data/2.0/M_PI*360.0);
-              // ROS_INFO("Published angle HEBI a1 = %f",angle_2_msg.points[0].positions/2.0/M_PI*360.0);
+              ROS_INFO("Published angle HEBI a1 = %f",angle_2_msg.points[0].positions[0]/2.0/M_PI*360.0);
+              ROS_INFO("Published angle Dynamixel a3 = %f || a1 = %f",angle_3_dyn.data/2.0/M_PI*360.0,angle_1_dyn.data/2.0/M_PI*360.0);
+
             }
 
             if(inverse_kin) {
@@ -413,7 +438,7 @@ Eigen::Matrix4f ControllerProcessor::T_dynamixel_to_hebi_clamp2(const double& a2
 }
 
 Eigen::Matrix4f ControllerProcessor::T_clamp2_clamp1(const double& a1) {
-  double a1_offset = -135.0/360.0*2.0*M_PI;
+  double a1_offset = -225.0/360.0*2.0*M_PI;
   double a1_fix = 90.0/360.0*2.0*M_PI;
 
   Eigen::Matrix3f Rx;

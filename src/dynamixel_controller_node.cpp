@@ -31,11 +31,14 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
            kDefaultObjectsPubTopic_1);
   nh.param("queue_size_pub_command_1", parameter->queue_size_pub_command_1,
            kDefaultObjectsPubQueueSize_1);
+  nh.param("pub_rostopic_command_1_dynamixel", parameter->pub_rostopic_command_1_dynamixel,
+           kDefaultObjectsPubTopic_1_dynamixel);
+  nh.param("queue_size_pub_command_1_dynamixel", parameter->queue_size_pub_command_1_dynamixel,
+           kDefaultObjectsPubQueueSize_1_dyn);
   nh.param("pub_rostopic_command_2", parameter->pub_rostopic_command_2,
            kDefaultObjectsPubTopic_2);
   nh.param("queue_size_pub_command_2", parameter->queue_size_pub_command_2,
           kDefaultObjectsPubQueueSize_2);
-
   nh.param("pub_rostopic_command_2_hebi", parameter->pub_rostopic_command_2_hebi,
            kDefaultObjectsPubTopic_2_hebi);
   nh.param("queue_size_pub_command_2_hebi", parameter->queue_size_pub_command_2_hebi,
@@ -45,6 +48,10 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
            kDefaultObjectsPubTopic_3);
   nh.param("queue_size_pub_command_3", parameter->queue_size_pub_command_3,
            kDefaultObjectsPubQueueSize_3);
+  nh.param("pub_rostopic_command_3_dynamixel", parameter->pub_rostopic_command_3_dynamixel,
+          kDefaultObjectsPubTopic_3_dynamixel);
+  nh.param("queue_size_pub_command_3_dynamixel", parameter->queue_size_pub_command_3_dynamixel,
+          kDefaultObjectsPubQueueSize_3_dyn);
 
   nh.param("pub_rostopic_1", parameter->pub_rostopic_1,
              kDefaultPubTopic_1);

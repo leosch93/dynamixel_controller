@@ -44,13 +44,13 @@ static const std::string kDefaultSubTopic_3     = "/default_sub_3";
 static const std::string kDefaultSubTopic_1_dyn   = "/default_sub_1_dyn";
 static const std::string kDefaultSubTopic_3_dyn    = "/default_sub_3_dyn";
 
-// static const std::string kDefaultSubTopic_tf    = "/default_sub_tf";
-// static const std::string kDefaultSubTopic_tf_staic    = "/default_sub_tf_static";
 
 static const std::string kDefaultObjectsPubTopic_1 = "/default_pub1";
+static const std::string kDefaultObjectsPubTopic_1_dynamixel = "/default_pub1_dyn";
 static const std::string kDefaultObjectsPubTopic_2 = "/default_pub2";
 static const std::string kDefaultObjectsPubTopic_2_hebi = "/default_pub2_hebi";
 static const std::string kDefaultObjectsPubTopic_3 = "/default_pub3";
+static const std::string kDefaultObjectsPubTopic_3_dynamixel = "/default_pub3_dyn";
 
 static const std::string kDefaultPubTopic_1 = "/default_pub1";
 static const std::string kDefaultPubTopic_2 = "/default_pub2";
@@ -66,9 +66,12 @@ static constexpr int kDefaultSubQueueSize_3_dyn  = 1;
 
 
 static constexpr int kDefaultObjectsPubQueueSize_1 = 1;
+static constexpr int kDefaultObjectsPubQueueSize_1_dyn = 1;
 static constexpr int kDefaultObjectsPubQueueSize_2 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_2_hebi = 1;
 static constexpr int kDefaultObjectsPubQueueSize_3 = 1;
+static constexpr int kDefaultObjectsPubQueueSize_3_dyn = 1;
+
 
 static constexpr int kDefaultPubQueueSize_1 = 1;
 static constexpr int kDefaultPubQueueSize_2 = 1;
@@ -158,9 +161,12 @@ class ControllerProcessor {
 
   /** \brief Ros Publisher for the commands. */
   ros::Publisher pub_cmd_1_;
+  ros::Publisher pub_cmd_1_dynamixel_;
   ros::Publisher pub_cmd_2_;
   ros::Publisher pub_cmd_2_hebi_;
   ros::Publisher pub_cmd_3_;
+  ros::Publisher pub_cmd_3_dynamixel_;
+
 
   /** \brief Ros Publisher for the calculated angles. */
   ros::Publisher pub_angle_1_;
