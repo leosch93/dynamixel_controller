@@ -90,7 +90,7 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
 // Callback for dynamic reconfigure
 void ControllerProcessor::ConfigCallback(
   dynamixel_controller::controllerConfig &config, uint32_t level) {
-  ROS_INFO("Reconfigure Request: %f %f %f %f %f %f %f %f %f % d %d %d %d %d %d %d %f %f %f %f %f",
+  ROS_INFO("Reconfigure Request: %f %f %f %f %f %f %f %f %f %d %d %d %d %d %d %d %d %f %f %f %f %f",
 
             config.double_param_1,
             config.double_param_2,
@@ -103,6 +103,8 @@ void ControllerProcessor::ConfigCallback(
             config.double_angle_init_3,
             config.double_angle_init_2,
             config.double_angle_init_1,
+
+            config.bool_traj,
 
             config.bool_fk,
 
@@ -201,21 +203,75 @@ void ControllerProcessor::ConfigCallback(
 
               ROS_INFO("IK published commands a3 = %f || a2 = %f || a1 = %f",ik_angle_3.data/2.0/M_PI*360.0,ik_angle_2.data/2.0/M_PI*360.0,ik_angle_1.data/2.0/M_PI*360.0);
 
-              float sample_time = 0.1;
+              float sample_time = 0.05;
+              // ROS_INFO("sample_time %f",sample_time);
               Eigen::Vector3f r_goal(0.7,0.7,0.4);
-              float velocity = 0.1;
+              float velocity = 0.001;
 
               Eigen::Vector3f dr = r_goal-r_start;
+              ROS_INFO("dr0 %f ||dr1 %f ||dr2 %f",dr(0),dr(1),dr(2));
               float traj_time = dr.norm()/velocity;
-              float time_steps = floor(sample_time/traj_time);
+              ROS_INFO("traj_time %f",traj_time);
+              float time_steps = floor(traj_time/sample_time);
+              ROS_INFO("time_steps %f",time_steps);
 
-              Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(time_steps,1,time_steps);
-              Eigen::VectorXd xtraj = Eigen::VectorXd::LinSpaced(time_steps,r_start(0),r_goal(0));
-              Eigen::VectorXd ytraj = Eigen::VectorXd::LinSpaced(time_steps,r_start(1),r_goal(1));
-              Eigen::VectorXd ztraj = Eigen::VectorXd::LinSpaced(time_steps,r_start(2),r_goal(2));
+              Eigen::VectorXf t = Eigen::VectorXf::LinSpaced(time_steps,1,time_steps)*sample_time;
 
-      
+              Eigen::VectorXf xtraj = Eigen::VectorXf::LinSpaced(time_steps,r_start(0),r_goal(0));
+              Eigen::VectorXf ytraj = Eigen::VectorXf::LinSpaced(time_steps,r_start(1),r_goal(1));
+              Eigen::VectorXf ztraj = Eigen::VectorXf::LinSpaced(time_steps,r_start(2),r_goal(2));
+              ROS_INFO("t %f ||t %f ||t %f",t(0),t(1),t(2));
 
+              ROS_INFO("xtraj %f ||xtraj %f ||xtraj %f",xtraj(0),xtraj(1),xtraj(2));
+              ROS_INFO("ytraj %f ||ytraj %f ||ytraj %f",ytraj(0),ytraj(1),ytraj(2));
+              ROS_INFO("ztraj %f ||ztraj %f ||ztraj %f",ztraj(0),ztraj(1),ztraj(2));
+
+              for(int i = 0;i<time_steps;i++) {
+                Eigen::Vector3f pos(xtraj(i),ytraj(i),ztraj(i));
+                Eigen::Vector3f q = inverse_kinematics(pos,r_init,0.001);
+                // ROS_INFO("At i = %i",i);
+                ROS_INFO("Found angles in deg a3 = %f || a2 = %f || a1 = %f",q(0)/2.0/M_PI*360.0,q(1)/2.0/M_PI*360.0,q(2)/2.0/M_PI*360.0);
+
+
+                ROS_INFO("Now publishing joint commands");
+                std_msgs::Float64 ik_angle_3;
+                std_msgs::Float64 ik_angle_2;
+                std_msgs::Float64 ik_angle_1;
+
+                //  HEBI
+                trajectory_msgs::JointTrajectory angle_2_msg;
+                angle_2_msg.joint_names.resize(1);
+                angle_2_msg.joint_names[0] = "X5-4/M1";
+                angle_2_msg.points.resize(1);
+                angle_2_msg.points[0].positions.push_back(-q(1));
+                // Dynamixel
+                std_msgs::Float64 angle_3_dyn;
+                std_msgs::Float64 angle_1_dyn;
+                angle_3_dyn.data = q(0)+M_PI;
+                angle_1_dyn.data =  q(2)+M_PI;
+
+
+                ik_angle_3.data = q(0);
+                ik_angle_2.data = q(1);
+                ik_angle_1.data = q(2);
+
+                // Publish
+                pub_cmd_3_.publish(ik_angle_3);
+                pub_cmd_2_.publish(ik_angle_2);
+                pub_cmd_1_.publish(ik_angle_1);
+
+                pub_cmd_3_dynamixel_.publish(angle_3_dyn);
+                pub_cmd_2_hebi_.publish(angle_2_msg);
+                pub_cmd_1_dynamixel_.publish(angle_1_dyn);
+
+                // ros::Duration(1).sleep();
+
+                r_init(0) = q(0);
+                r_init(1) = q(1);
+                r_init(2) = q(2);
+                ROS_INFO("New initial angles a1 = %f || a2 = %f || a3 = %f",r_init(0)/2.0/M_PI*360.0,r_init(1)/2.0/M_PI*360.0,r_init(2)/2.0/M_PI*360.0);
+
+              }
 
 
 
