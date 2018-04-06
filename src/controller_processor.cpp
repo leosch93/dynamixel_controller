@@ -120,6 +120,7 @@ void ControllerProcessor::ConfigCallback(
             config.max_angle_both_pos,
             config.max_angle_both_neg);
 
+            bool traj=config.bool_traj;
             bool forward_kin=config.bool_fk;
             bool inverse_kin=config.bool_ik;
             bool homeing_state=config.bool_home;
@@ -155,7 +156,70 @@ void ControllerProcessor::ConfigCallback(
             // Eigen::Matrix3d A_inverse = psuedoInverseMat(Atest,0.001);
 
 
+            if(traj) {
+              Eigen::Vector3f r_start(ik_testing_position_x,ik_testing_position_y,ik_testing_position_z);
+              ROS_INFO("Input coordinates at start x = %f || y = %f || z = %f",r_start(0),r_start(1),r_start(2));
+              Eigen::Vector3f r_init(ik_initial_angle_3,ik_initial_angle_2,ik_initial_angle_1);
+              ROS_INFO("Input initial angles a1 = %f || a2 = %f || a3 = %f",r_init(0),r_init(1),r_init(2));
 
+              ROS_INFO("Inverse Kinematics");
+              Eigen::Vector3f q = inverse_kinematics(r_start,r_init,0.001);
+              ROS_INFO("Found angles in rad a3 = %f || a2 = %f || a1 = %f",q(0),q(1),q(2));
+              ROS_INFO("Found angles in deg a3 = %f || a2 = %f || a1 = %f",q(0)/2.0/M_PI*360.0,q(1)/2.0/M_PI*360.0,q(2)/2.0/M_PI*360.0);
+
+
+              ROS_INFO("Now publishing joint commands");
+              std_msgs::Float64 ik_angle_3;
+              std_msgs::Float64 ik_angle_2;
+              std_msgs::Float64 ik_angle_1;
+
+              //  HEBI
+              trajectory_msgs::JointTrajectory angle_2_msg;
+              angle_2_msg.joint_names.resize(1);
+              angle_2_msg.joint_names[0] = "X5-4/M1";
+              angle_2_msg.points.resize(1);
+              angle_2_msg.points[0].positions.push_back(-q(1));
+              // Dynamixel
+              std_msgs::Float64 angle_3_dyn;
+              std_msgs::Float64 angle_1_dyn;
+              angle_3_dyn.data = q(0)+M_PI;
+              angle_1_dyn.data =  q(2)+M_PI;
+
+
+              ik_angle_3.data = q(0);
+              ik_angle_2.data = q(1);
+              ik_angle_1.data = q(2);
+
+              // Publish
+              pub_cmd_3_.publish(ik_angle_3);
+              pub_cmd_2_.publish(ik_angle_2);
+              pub_cmd_1_.publish(ik_angle_1);
+
+              pub_cmd_3_dynamixel_.publish(angle_3_dyn);
+              pub_cmd_2_hebi_.publish(angle_2_msg);
+              pub_cmd_1_dynamixel_.publish(angle_1_dyn);
+
+              ROS_INFO("IK published commands a3 = %f || a2 = %f || a1 = %f",ik_angle_3.data/2.0/M_PI*360.0,ik_angle_2.data/2.0/M_PI*360.0,ik_angle_1.data/2.0/M_PI*360.0);
+
+              float sample_time = 0.1;
+              Eigen::Vector3f r_goal(0.7,0.7,0.4);
+              float velocity = 0.1;
+
+              Eigen::Vector3f dr = r_goal-r_start;
+              float traj_time = dr.norm()/velocity;
+              float time_steps = floor(sample_time/traj_time);
+
+              Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(time_steps,1,time_steps);
+              Eigen::VectorXd xtraj = Eigen::VectorXd::LinSpaced(time_steps,r_start(0),r_goal(0));
+              Eigen::VectorXd ytraj = Eigen::VectorXd::LinSpaced(time_steps,r_start(1),r_goal(1));
+              Eigen::VectorXd ztraj = Eigen::VectorXd::LinSpaced(time_steps,r_start(2),r_goal(2));
+
+      
+
+
+
+
+            }
 
             if(forward_kin) {
 
@@ -428,7 +492,18 @@ void ControllerProcessor::ConfigCallback(
 
 }//namespace callback dynamic reconfigure
 
-
+// Eigen::MatrixXf ControllerProcessor::linspace(const float& a,const float& b,const float& n) {
+//
+//   Eigen::MatrixXf mat(1,n);
+//   int it = 0;
+//   for (int i = 0; i<=n-2; i++) {
+//     float temp = a+i*(b-a)/(n-1);
+//     mat(1,it) = temp;
+//     it += 1;
+//   }
+//
+//   return mat;
+// }
 
 Eigen::Matrix4f ControllerProcessor::T_world_dynamixel_to_hebi(const double& a3) {
   double a3_offset = 45.0/360.0*2.0*M_PI;
