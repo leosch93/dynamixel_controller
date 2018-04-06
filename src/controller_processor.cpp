@@ -269,7 +269,7 @@ void ControllerProcessor::ConfigCallback(
               std_msgs::Float64 angle_3_dyn;
               std_msgs::Float64 angle_1_dyn;
               angle_3_dyn.data = -3.0*M_PI/4.0+M_PI;
-              angle_1_dyn.data =  M_PI;
+              angle_1_dyn.data =  M_PI+M_PI;
 
 
 
