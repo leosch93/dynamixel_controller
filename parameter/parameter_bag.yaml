@@ -10,8 +10,14 @@ queue_size_sub_enc_3: 1                                # queue size of the subsc
 sub_rostopic_dynamixel_1: /arm/joint1_position_controller/state          # subscribed rostopic
 queue_size_sub_dynamixel_1: 1                              # queue size of the subscriber
 
-sub_rostopic_dynamixel_3: /arm/joint3_position_controller/state           # subscribed rostopic
+sub_rostopic_hebi_2: /arm/TODO_hebi                      # subscribed rostopic
+queue_size_sub_rostopic_hebi_2: 1                                # queue size of the subscriber
+
+sub_rostopic_dynamixel_3: /arm/joint3_position_controller/state   # subscribed rostopic
 queue_size_sub_dynamixel_3: 1                                # queue size of the subscriber
+
+sub_rostopic_tip_position: /wand/vrpn_client/estimated_transform                     # subscribed rostopic
+queue_size_sub_rostopic_tip_position: 1                                # queue size of the subscriber
 
 
 

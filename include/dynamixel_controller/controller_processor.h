@@ -23,6 +23,7 @@
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/message_filter.h"
 #include "message_filters/subscriber.h"
+#include "sensor_msgs/JointState.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include <eigen3/Eigen/Dense>
 // #include "matlab.hpp"
@@ -42,7 +43,11 @@ static const std::string kDefaultSubTopic_1   = "/default_sub_1";
 static const std::string kDefaultSubTopic_3     = "/default_sub_3";
 
 static const std::string kDefaultSubTopic_1_dyn   = "/default_sub_1_dyn";
+static const std::string kDefaultSubTopic_2_hebi    = "/default_sub_2_hebi";
 static const std::string kDefaultSubTopic_3_dyn    = "/default_sub_3_dyn";
+
+static const std::string kDefaultSubTopic_tip_position    = "/default_sub_tip_position";
+
 
 
 static const std::string kDefaultObjectsPubTopic_1 = "/default_pub1";
@@ -62,7 +67,10 @@ static constexpr int kDefaultSubQueueSize_1   = 1;
 static constexpr int kDefaultSubQueueSize_3   = 1;
 
 static constexpr int kDefaultSubQueueSize_1_dyn  = 1;
+static constexpr int kDefaultSubQueueSize_2_hebi  = 1;
 static constexpr int kDefaultSubQueueSize_3_dyn  = 1;
+
+static constexpr int kDefaultSubQueueSize_tip_pos  = 1;
 
 
 static constexpr int kDefaultObjectsPubQueueSize_1 = 1;
@@ -105,7 +113,9 @@ class ControllerProcessor {
   float median_n_3(const float& a,const float& b,const float& c);
 
   void CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1);
+  void CallbackHebi2(const sensor_msgs::JointState& state_msg);
   void CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3);
+  void Callback_tip_position(const geometry_msgs::TransformStamped& point_msg);
 
   void CallbackEnc1(const geometry_msgs::PointStamped& pt_s_1);
   void CallbackEnc3(const geometry_msgs::PointStamped& pt_s_3);
@@ -153,11 +163,11 @@ class ControllerProcessor {
 
   /** \brief Ros Subscriber for the dynamixel. */
   ros::Subscriber sub_dyn_1_;
+  ros::Subscriber sub_hebi_2_;
   ros::Subscriber sub_dyn_3_;
 
-  /** \brief Ros Subscriber for the transforms. */
-  // ros::Subscriber sub_tf_;
-  // ros::Subscriber sub_tf_static_;
+  ros::Subscriber sub_tip_pos_;
+
 
   /** \brief Ros Publisher for the commands. */
   ros::Publisher pub_cmd_1_;

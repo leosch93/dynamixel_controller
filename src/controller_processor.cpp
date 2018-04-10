@@ -26,10 +26,17 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
                             parameter_.queue_size_sub_dynamixel_1,
                             &ControllerProcessor::CallbackDyn1,this);
 
+  sub_hebi_2_ = nh_.subscribe(parameter_.sub_rostopic_hebi_2,
+                            parameter_.queue_size_sub_rostopic_hebi_2,
+                            &ControllerProcessor::CallbackHebi2,this);
+
   sub_dyn_3_ = nh_.subscribe(parameter_.sub_rostopic_dynamixel_3,
                             parameter_.queue_size_sub_dynamixel_3,
                             &ControllerProcessor::CallbackDyn3,this);
 
+  sub_tip_pos_ = nh_.subscribe(parameter_.sub_rostopic_tip_position,
+                          parameter_.queue_size_sub_rostopic_tip_position,
+                          &ControllerProcessor::Callback_tip_position,this);
 
 
 
@@ -561,6 +568,17 @@ void ControllerProcessor::ConfigCallback(
 //   return mat;
 // }
 
+
+// Eigen::Matrix4f ControllerProcessor::T_world_to_dynamixel(const double& a4) {
+//   Eigen::Matrix4f T;
+//   T << 0, 0, 0, 0.0325,
+//       0, 0, 0, 0,
+//       0, 0, 1, 0.072,
+//       0, 0, 0, 1;
+//
+//   return T;
+// }
+
 Eigen::Matrix4f ControllerProcessor::T_world_dynamixel_to_hebi(const double& a3) {
   double a3_offset = 45.0/360.0*2.0*M_PI;
 
@@ -1030,7 +1048,7 @@ float ControllerProcessor::median_n_3(const float& a,const float& b,const float&
 
 
 void ControllerProcessor::CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1) {
-//float state_1 = dyn_state_1.current_pos;
+  //float state_1 = dyn_state_1.current_pos;
 
   if(only_once_dyn_1_ == true){
     dynam_state_1_initial_ = dyn_state_1.current_pos/2/M_PI*360;
@@ -1041,8 +1059,13 @@ void ControllerProcessor::CallbackDyn1(const dynamixel_msgs::JointState& dyn_sta
   //ROS_INFO("Received initial value froonly_once_enc_1_m dynamixel 1: [%f]",dynam_state_1_initial_);
 }
 
+void ControllerProcessor::CallbackHebi2(const sensor_msgs::JointState& state_msg){
+
+
+}
+
 void ControllerProcessor::CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3){
-//float state_3 = dyn_state_3.current_pos;
+  //float state_3 = dyn_state_3.current_pos;
 
   if(only_once_dyn_3_ == true){
     dynam_state_3_initial_ = dyn_state_3.current_pos/2/M_PI*360;
@@ -1051,6 +1074,67 @@ void ControllerProcessor::CallbackDyn3(const dynamixel_msgs::JointState& dyn_sta
   dynam_angle_3_ = dyn_state_3.current_pos/2/M_PI*360;
   //ROS_INFO("Received message from dynamixel 3: [%f]",state_3/2/M_PI*360);
   //ROS_INFO("Received initial value from dynamixel 3: [%f]",dynam_state_3_initial_);
+}
+
+void ControllerProcessor::Callback_tip_position(const geometry_msgs::TransformStamped& point_msg){
+
+  float x = point_msg.transform.translation.x;
+  float y = point_msg.transform.translation.y;
+  float z = point_msg.transform.translation.z;
+
+  float ik_initial_angle_3 = 5*2.0*M_PI/360.0;
+  float ik_initial_angle_2 = -30*2.0*M_PI/360.0;
+  float ik_initial_angle_1 = 100*2.0*M_PI/360.0;
+
+  Eigen::Vector3f r_des(x,y,z);
+  ROS_INFO("Input coordinates to reach x = %f || y = %f || z = %f",r_des(0),r_des(1),r_des(2));
+  Eigen::Vector3f r_init(ik_initial_angle_3,ik_initial_angle_2,ik_initial_angle_1);
+  ROS_INFO("Input initial angles a1 = %f || a2 = %f || a3 = %f",r_init(0),r_init(1),r_init(2));
+
+  ROS_INFO("Inverse Kinematics");
+  Eigen::Vector3f q = inverse_kinematics(r_des,r_init,0.01);
+  ROS_INFO("Found angles in rad a3 = %f || a2 = %f || a1 = %f",q(0),q(1),q(2));
+  ROS_INFO("Found angles in deg a3 = %f || a2 = %f || a1 = %f",q(0)/2.0/M_PI*360.0,q(1)/2.0/M_PI*360.0,q(2)/2.0/M_PI*360.0);
+
+
+  ROS_INFO("Now publishing joint commands");
+  // ros::Duration(5).sleep();
+
+  // Create message from value
+  std_msgs::Float64 ik_angle_3;
+  std_msgs::Float64 ik_angle_2;
+  std_msgs::Float64 ik_angle_1;
+
+  // //  HEBI
+  // trajectory_msgs::JointTrajectory angle_2_msg;
+  // angle_2_msg.joint_names.resize(1);
+  // angle_2_msg.joint_names[0] = "X5-4/M1";
+  // angle_2_msg.points.resize(1);
+  // angle_2_msg.points[0].positions.push_back(-q(1));
+  // // Dynamixel
+  // std_msgs::Float64 angle_3_dyn;
+  // std_msgs::Float64 angle_1_dyn;
+  // angle_3_dyn.data = q(0)+M_PI;
+  // angle_1_dyn.data =  q(2)+M_PI;
+
+
+  ik_angle_3.data = q(0);
+  ik_angle_2.data = q(1);
+  ik_angle_1.data = q(2);
+
+  // Publish
+  pub_cmd_3_.publish(ik_angle_3);
+  pub_cmd_2_.publish(ik_angle_2);
+  pub_cmd_1_.publish(ik_angle_1);
+
+  // pub_cmd_3_dynamixel_.publish(angle_3_dyn);
+  // pub_cmd_2_hebi_.publish(angle_2_msg);
+  // pub_cmd_1_dynamixel_.publish(angle_1_dyn);
+
+  ROS_INFO("IK published commands a3 = %f || a2 = %f || a1 = %f",ik_angle_3.data/2.0/M_PI*360.0,ik_angle_2.data/2.0/M_PI*360.0,ik_angle_1.data/2.0/M_PI*360.0);
+
+
+
 }
 
 
