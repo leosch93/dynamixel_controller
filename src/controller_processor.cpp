@@ -372,20 +372,20 @@ void ControllerProcessor::ConfigCallback(
               std_msgs::Float64 home_angle_1;
 
               home_angle_3.data = -3.0*M_PI/4.0;
-              home_angle_2.data = -(M_PI-M_PI/8);
-              home_angle_1.data = M_PI/4;
+              home_angle_2.data = -3.0*M_PI/4.0;
+              home_angle_1.data = M_PI;
 
               trajectory_msgs::JointTrajectory angle_2_msg;
               angle_2_msg.joint_names.resize(1);
               angle_2_msg.joint_names[0] = "X5-4/M1";
               angle_2_msg.points.resize(1);
               // neg
-              angle_2_msg.points[0].positions.push_back(-(-(M_PI-M_PI/8)));
+              angle_2_msg.points[0].positions.push_back(-(-3.0*M_PI/4.0));
               // Dynamixel
               std_msgs::Float64 angle_3_dyn;
               std_msgs::Float64 angle_1_dyn;
               angle_3_dyn.data = -3.0*M_PI/4.0+M_PI;
-              angle_1_dyn.data =  M_PI+M_PI/4;
+              angle_1_dyn.data =  M_PI+M_PI;
 
 
 
@@ -1072,7 +1072,6 @@ void ControllerProcessor::Callback_tip_position(const geometry_msgs::TransformSt
 
 
 }
-
 
 //Callback for Encoder 1
 void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1) {
