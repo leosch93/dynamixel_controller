@@ -57,10 +57,6 @@ static const std::string kDefaultObjectsPubTopic_2_hebi = "/default_pub2_hebi";
 static const std::string kDefaultObjectsPubTopic_3 = "/default_pub3";
 static const std::string kDefaultObjectsPubTopic_3_dynamixel = "/default_pub3_dyn";
 
-static const std::string kDefaultPubTopic_1 = "/default_pub1";
-static const std::string kDefaultPubTopic_2 = "/default_pub2";
-static const std::string kDefaultPubTopic_3 = "/default_pub3";
-static const std::string kDefaultPubTopic_4 = "/default_pub4";
 
 
 static constexpr int kDefaultSubQueueSize_1   = 1;
@@ -81,10 +77,14 @@ static constexpr int kDefaultObjectsPubQueueSize_3 = 1;
 static constexpr int kDefaultObjectsPubQueueSize_3_dyn = 1;
 
 
+// Torque pub
+static const std::string kDefaultPubTopic_1 = "/default_pub1";
+static const std::string kDefaultPubTopic_2 = "/default_pub2";
+static const std::string kDefaultPubTopic_3 = "/default_pub3";
+
 static constexpr int kDefaultPubQueueSize_1 = 1;
 static constexpr int kDefaultPubQueueSize_2 = 1;
 static constexpr int kDefaultPubQueueSize_3 = 1;
-static constexpr int kDefaultPubQueueSize_4 = 1;
 
 
 /**
@@ -112,9 +112,9 @@ class ControllerProcessor {
    */
   float median_n_3(const float& a,const float& b,const float& c);
 
-  void CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1);
+  // void CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1);
   void CallbackHebi2(const sensor_msgs::JointState& state_msg);
-  void CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3);
+  // void CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3);
   void Callback_tip_position(const geometry_msgs::TransformStamped& point_msg);
 
   void CallbackEnc1(const geometry_msgs::PointStamped& pt_s_1);
@@ -179,23 +179,23 @@ class ControllerProcessor {
 
 
   /** \brief Ros Publisher for the calculated angles. */
-  ros::Publisher pub_angle_1_;
-  ros::Publisher pub_angle_3_;
-  ros::Publisher pub_angle_1_filtered_o_;
-  ros::Publisher pub_angle_3_filtered_o_;
+  ros::Publisher pub_torque_1_;
+  ros::Publisher pub_torque_2_;
+  ros::Publisher pub_torque_3_;
+
 
  /** Global variables */
   float encoder_angle_1_initial_{};
   float encoder_angle_3_initial_{};
 
-  float dynam_state_1_initial_{};
-  float dynam_state_3_initial_{};
+  // float dynam_state_1_initial_{};
+  // float dynam_state_3_initial_{};
 
-  float offset_angle_a_1_{};
-  float offset_angle_a_3_{};
+  // float offset_angle_a_1_{};
+  // float offset_angle_a_3_{};
 
-  float enc_1_angle_filt_offset_{};
-  float enc_3_angle_filt_offset_{};
+  // float enc_1_angle_filt_offset_{};
+  // float enc_3_angle_filt_offset_{};
 
 
   // Dynamic reconfigure
@@ -209,15 +209,16 @@ class ControllerProcessor {
   float angle_val_e3_2_{};
   float angle_val_e3_3_{};
 
-  float dyn_1_state_val_1_{};
-  float dyn_1_state_val_2_{};
-  float dyn_1_state_val_3_{};
+  // float dyn_1_state_val_1_{};
+  // float dyn_1_state_val_2_{};
+  // float dyn_1_state_val_3_{};
+  //
+  // float dyn_3_state_val_1_{};
+  // float dyn_3_state_val_2_{};
+  // float dyn_3_state_val_3_{};
 
-  float dyn_3_state_val_1_{};
-  float dyn_3_state_val_2_{};
-  float dyn_3_state_val_3_{};
+  bool is_wand_{};
 
-  //ros::Time start_;
   bool only_once_enc_1_1_ = true;
   bool only_once_enc_1_2_ = true;
   bool only_once_enc_1_3_ = true;
@@ -229,18 +230,25 @@ class ControllerProcessor {
   bool offset_calculated_1 = false;
   bool offset_calculated_3 = false;
 
-  bool only_once_dyn_1_ = true;
-  bool only_once_dyn_3_ = true;
+  // bool only_once_dyn_1_ = true;
+  // bool only_once_dyn_3_ = true;
 
-  float dynam_angle_1_{};
-  float dynam_angle_3_{};
+  // float dynam_angle_1_{};
+  // float dynam_angle_3_{};
 
-  float angle_diff_a_1_{};
-  float angle_diff_a_3_{};
+  // float angle_diff_a_1_{};
+  // float angle_diff_a_3_{};
+
+
+
 
   // FEM simulation values
-  float k_1_ = 0.5; //Nm/deg
-  float k_3_ = 0.5; //Nm/deg
+  // float k_1_ = 0.5; //Nm/deg
+  // float k_3_ = 0.5; //Nm/deg
+
+  // Tested on testbench
+  float k_1_ = 0.444; //Nm/deg
+  float k_3_ = 0.444; //Nm/deg
 
   // Torque estimate
   float t_est_1_{};

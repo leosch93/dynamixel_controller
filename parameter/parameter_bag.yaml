@@ -7,17 +7,20 @@ queue_size_sub_enc_1: 1                               # queue size of the subscr
 sub_rostopic_enc_3: /Encoder_3_data_stamped            # subscribed rostopic
 queue_size_sub_enc_3: 1                                # queue size of the subscriber
 
-sub_rostopic_dynamixel_1: /arm/joint1_position_controller/state          # subscribed rostopic
+sub_rostopic_dynamixel_1: /arm/joint1_position_controller_dynamixel/state          # subscribed rostopic
 queue_size_sub_dynamixel_1: 1                              # queue size of the subscriber
 
 sub_rostopic_hebi_2: /arm/TODO_hebi                      # subscribed rostopic
 queue_size_sub_rostopic_hebi_2: 1                                # queue size of the subscriber
 
-sub_rostopic_dynamixel_3: /arm/joint3_position_controller/state   # subscribed rostopic
+sub_rostopic_dynamixel_3: /arm/joint3_position_controller_dynamixel/state   # subscribed rostopic
 queue_size_sub_dynamixel_3: 1                                # queue size of the subscriber
+
+
 
 sub_rostopic_tip_position: /wand/vrpn_client/estimated_transform                     # subscribed rostopic
 queue_size_sub_rostopic_tip_position: 1                                # queue size of the subscriber
+
 
 
 
@@ -41,14 +44,11 @@ pub_rostopic_command_3_dynamixel: /arm/joint3_position_controller_dynamixel/comm
 queue_size_pub_command_3_dynamixel: 1                            # queue size of the publisher
 
 
-pub_rostopic_1: /actuator_1/torque_estimate                       # published rostopic
+pub_rostopic_1: /actuator_1/torque_estimate             # published rostopic
 queue_size_pub_rostopic_1: 1                            # queue size of the publisher
 
-pub_rostopic_2: /actuator_3/torque_estimate                       # published rostopic
-queue_size_pub_rostopic_2: 1                           # queue size of the publisher
+pub_rostopic_2: /actuator2/torque_hebi                  # published rostopic
+queue_size_pub_rostopic_2: 1                            # queue size of the publisher
 
-pub_rostopic_3: /encoder_1/angle_filtered_offsetcorrected # published rostopic
+pub_rostopic_3: /actuator_3/torque_estimate             # published rostopic
 queue_size_pub_rostopic_3: 1                            # queue size of the publisher
-
-pub_rostopic_4: /encoder_3/angle_filtered_offsetcorrected # published rostopic
-queue_size_pub_rostopic_4: 1                            # queue size of the publisher

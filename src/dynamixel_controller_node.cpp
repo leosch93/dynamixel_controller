@@ -8,6 +8,8 @@ namespace controller {
 
 void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
   // Retrieve all parameters or set to default
+
+
   nh.param("sub_rostopic_enc_1", parameter->sub_rostopic_enc_1,
            kDefaultSubTopic_1);
   nh.param("queue_size_sub_enc_1", parameter->queue_size_sub_enc_1,
@@ -29,10 +31,14 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
           kDefaultSubTopic_3_dyn);
   nh.param("queue_size_sub_dynamixel_3", parameter->queue_size_sub_dynamixel_3,
           kDefaultSubQueueSize_3_dyn);
+
+  // Vicon Tip
   nh.param("sub_rostopic_tip_position", parameter->sub_rostopic_tip_position,
           kDefaultSubTopic_tip_position);
   nh.param("queue_size_sub_rostopic_tip_position", parameter->queue_size_sub_rostopic_tip_position,
           kDefaultSubQueueSize_tip_pos);
+
+  // Publishing Gazebo + Hardware
 
   nh.param("pub_rostopic_command_1", parameter->pub_rostopic_command_1,
            kDefaultObjectsPubTopic_1);
@@ -42,6 +48,7 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
            kDefaultObjectsPubTopic_1_dynamixel);
   nh.param("queue_size_pub_command_1_dynamixel", parameter->queue_size_pub_command_1_dynamixel,
            kDefaultObjectsPubQueueSize_1_dyn);
+
   nh.param("pub_rostopic_command_2", parameter->pub_rostopic_command_2,
            kDefaultObjectsPubTopic_2);
   nh.param("queue_size_pub_command_2", parameter->queue_size_pub_command_2,
@@ -60,14 +67,13 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
   nh.param("queue_size_pub_command_3_dynamixel", parameter->queue_size_pub_command_3_dynamixel,
           kDefaultObjectsPubQueueSize_3_dyn);
 
+  // Torque publish
   nh.param("pub_rostopic_1", parameter->pub_rostopic_1,
              kDefaultPubTopic_1);
   nh.param("pub_rostopic_2", parameter->pub_rostopic_2,
             kDefaultPubTopic_2);
   nh.param("pub_rostopic_3", parameter->pub_rostopic_3,
-             kDefaultPubTopic_3);
-  nh.param("pub_rostopic_4", parameter->pub_rostopic_4,
-            kDefaultPubTopic_4);
+            kDefaultPubTopic_3);
 
 
   nh.param("queue_size_pub_rostopic_1", parameter->queue_size_pub_rostopic_1,
@@ -76,8 +82,7 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
            kDefaultPubQueueSize_2);
   nh.param("queue_size_pub_rostopic_3", parameter->queue_size_pub_rostopic_3,
             kDefaultPubQueueSize_3);
-  nh.param("queue_size_pub_rostopic_4", parameter->queue_size_pub_rostopic_4,
-           kDefaultPubQueueSize_4);
+
 }
 
 } // namespace controller

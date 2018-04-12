@@ -33,6 +33,34 @@ struct ParameterBag {
 
 
 
+  /** Subscribed rostopic for the data of the internal encoder of the dynamixel 1. */
+  std::string sub_rostopic_dynamixel_1;
+
+  /** Queue size for the dynamixel rostopic subscriber. */
+  int queue_size_sub_dynamixel_1;
+
+  /** Subscribed rostopic for the data of the internal encoder of the dynamixel 3. */
+  std::string sub_rostopic_hebi_2;
+
+  /** Queue size for the dynamixel rostopic subscriber. */
+  int queue_size_sub_rostopic_hebi_2;
+
+  /** Subscribed rostopic for the data of the internal encoder of the dynamixel 3. */
+  std::string sub_rostopic_dynamixel_3;
+
+  /** Queue size for the dynamixel rostopic subscriber. */
+  int queue_size_sub_dynamixel_3;
+
+
+
+  /** Subscribed rostopic for the tip position. */
+  std::string sub_rostopic_tip_position;
+
+  /** Queue size for the dynamixel rostopic subscriber. */
+  int queue_size_sub_rostopic_tip_position;
+
+
+
   /** Published rostopic for the dynamixel. */
   std::string pub_rostopic_command_1;
 
@@ -70,6 +98,9 @@ struct ParameterBag {
   int queue_size_pub_command_3_dynamixel;
 
 
+
+ // Angles
+
   /** Published rostopic angle 1. */
   std::string pub_rostopic_1;
 
@@ -100,33 +131,6 @@ struct ParameterBag {
 
 
 
-
-
-  /** Subscribed rostopic for the data of the internal encoder of the dynamixel 1. */
-  std::string sub_rostopic_dynamixel_1;
-
-  /** Queue size for the dynamixel rostopic subscriber. */
-  int queue_size_sub_dynamixel_1;
-
-  /** Subscribed rostopic for the data of the internal encoder of the dynamixel 3. */
-  std::string sub_rostopic_hebi_2;
-
-  /** Queue size for the dynamixel rostopic subscriber. */
-  int queue_size_sub_rostopic_hebi_2;
-
-  /** Subscribed rostopic for the data of the internal encoder of the dynamixel 3. */
-  std::string sub_rostopic_dynamixel_3;
-
-  /** Queue size for the dynamixel rostopic subscriber. */
-  int queue_size_sub_dynamixel_3;
-
-
-
-    /** Subscribed rostopic for the tip position. */
-    std::string sub_rostopic_tip_position;
-
-    /** Queue size for the dynamixel rostopic subscriber. */
-    int queue_size_sub_rostopic_tip_position;
 
 
 
