@@ -1171,7 +1171,7 @@ void ControllerProcessor::CallbackHebi2(const sensor_msgs::JointState& state_msg
   std_msgs::Float64 t_2_msg;
 
 
-  t_2_msg.data = state_msg.effort;
+  t_2_msg.data = state_msg.effort[0];
 
 
   // Publish
