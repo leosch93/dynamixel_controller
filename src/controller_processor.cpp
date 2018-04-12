@@ -372,20 +372,20 @@ void ControllerProcessor::ConfigCallback(
               std_msgs::Float64 home_angle_1;
 
               home_angle_3.data = -3.0*M_PI/4.0;
-              home_angle_2.data = -3.0*M_PI/4.0;
-              home_angle_1.data = M_PI;
+              home_angle_2.data = -(M_PI-M_PI/8);
+              home_angle_1.data = M_PI/4;
 
               trajectory_msgs::JointTrajectory angle_2_msg;
               angle_2_msg.joint_names.resize(1);
               angle_2_msg.joint_names[0] = "X5-4/M1";
               angle_2_msg.points.resize(1);
               // neg
-              angle_2_msg.points[0].positions.push_back(-(-3.0*M_PI/4.0));
+              angle_2_msg.points[0].positions.push_back(-(-(M_PI-M_PI/8)));
               // Dynamixel
               std_msgs::Float64 angle_3_dyn;
               std_msgs::Float64 angle_1_dyn;
               angle_3_dyn.data = -3.0*M_PI/4.0+M_PI;
-              angle_1_dyn.data =  M_PI+M_PI;
+              angle_1_dyn.data =  M_PI+M_PI/4;
 
 
 
@@ -1009,32 +1009,7 @@ float ControllerProcessor::median_n_3(const float& a,const float& b,const float&
 
 
 
-
-// void ControllerProcessor::CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1) {
-//   //float state_1 = dyn_state_1.current_pos;
-//
-//   if(only_once_dyn_1_ == true){
-//     dynam_state_1_initial_ = dyn_state_1.current_pos/2/M_PI*360;
-//     only_once_dyn_1_ = false;
-//   }
-//   dynam_angle_1_ = dyn_state_1.current_pos/2/M_PI*360;
-//   ROS_INFO("Received message from dynamixel 1: [%f]",dynam_angle_1_);
-//   ROS_INFO("Received initial value froonly_once_enc_1_m dynamixel 1: [%f]",dynam_state_1_initial_);
-// }
-
-
-// void ControllerProcessor::CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3){
-//   //float state_3 = dyn_state_3.current_pos;
-//
-//   if(only_once_dyn_3_ == true){
-//     dynam_state_3_initial_ = dyn_state_3.current_pos/2/M_PI*360;
-//     only_once_dyn_3_ = false;
-//   }
-//   dynam_angle_3_ = dyn_state_3.current_pos/2/M_PI*360;
-//   // ROS_INFO("Received message from dynamixel 3: [%f]",dynam_angle_3_/2/M_PI*360);
-//   // ROS_INFO("Received initial value from dynamixel 3: [%f]",dynam_state_3_initial_);
-// }
-
+// Callack VICON
 void ControllerProcessor::Callback_tip_position(const geometry_msgs::TransformStamped& point_msg){
 
 
@@ -1164,6 +1139,7 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
 
 } // namespace Callback 1
 
+//Callback HEBI
 void ControllerProcessor::CallbackHebi2(const sensor_msgs::JointState& state_msg){
 
 
@@ -1178,7 +1154,6 @@ void ControllerProcessor::CallbackHebi2(const sensor_msgs::JointState& state_msg
   pub_torque_2_.publish(t_2_msg);
 
 }
-
 
 //Callback for Encoder 3
 void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3) {

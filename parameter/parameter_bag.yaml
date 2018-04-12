@@ -10,7 +10,7 @@ queue_size_sub_enc_3: 1                                # queue size of the subsc
 sub_rostopic_dynamixel_1: /arm/joint1_position_controller_dynamixel/state          # subscribed rostopic
 queue_size_sub_dynamixel_1: 1                              # queue size of the subscriber
 
-sub_rostopic_hebi_2: /arm/TODO_hebi                      # subscribed rostopic
+sub_rostopic_hebi_2: /hebi/manipulator/joints_state                      # subscribed rostopic
 queue_size_sub_rostopic_hebi_2: 1                                # queue size of the subscriber
 
 sub_rostopic_dynamixel_3: /arm/joint3_position_controller_dynamixel/state   # subscribed rostopic
@@ -47,7 +47,7 @@ queue_size_pub_command_3_dynamixel: 1                            # queue size of
 pub_rostopic_1: /actuator_1/torque_estimate             # published rostopic
 queue_size_pub_rostopic_1: 1                            # queue size of the publisher
 
-pub_rostopic_2: /actuator2/torque_hebi                  # published rostopic
+pub_rostopic_2: /actuator_2/torque_hebi                  # published rostopic
 queue_size_pub_rostopic_2: 1                            # queue size of the publisher
 
 pub_rostopic_3: /actuator_3/torque_estimate             # published rostopic
