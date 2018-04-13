@@ -1024,10 +1024,30 @@ void ControllerProcessor::Callback_tip_position(const geometry_msgs::TransformSt
   float ik_initial_angle_2 = -30*2.0*M_PI/360.0;
   float ik_initial_angle_1 = 100*2.0*M_PI/360.0;
 
-  Eigen::Vector3f r_des(x,y,z);
-  base_position_(0) = x;
-  base_position_(1) = y;
-  base_position_(2) = z;
+  bool is_tip_ = true;
+  Eigen::Vector3f r_des;
+  if (is_tip_) {
+    r_des = Eigen::Vector3f(x,y,z);
+
+    // TODO: do not hardcode
+    base_position_(0) = 1.70;
+    base_position_(1) = 1.33;
+    base_position_(2) = 0.20;
+  } else {
+    Eigen::Matrix4f tip;
+    // TODO: do not hardcode
+    tip(0,3) = 2.45;
+    tip(1,3) = 1.98;
+    tip(2,3) = 0.52;
+    r_des = Eigen::Vector3f(tip(0,3), tip(1,3), tip(2,3));
+
+    base_position_(0) = x;
+    base_position_(1) = y;
+    base_position_(2) = z;
+  }
+
+  std::cout << "r_des: " << r_des.transpose() << std::endl;
+
   ROS_INFO("Input coordinates to reach x = %f || y = %f || z = %f",r_des(0),r_des(1),r_des(2));
   Eigen::Vector3f r_init(ik_initial_angle_3,ik_initial_angle_2,ik_initial_angle_1);
   ROS_INFO("Input initial angles a1 = %f || a2 = %f || a3 = %f",r_init(0),r_init(1),r_init(2));
