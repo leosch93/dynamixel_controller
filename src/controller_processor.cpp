@@ -544,19 +544,15 @@ void ControllerProcessor::ConfigCallback(
 
 }//namespace callback dynamic reconfigure
 
-
-
-// Eigen::Matrix4f ControllerProcessor::T_world_to_dynamixel(const double& a4) {
-//   Eigen::Matrix4f T;
-//   T << 0, 0, 0, 0.0325,
-//       0, 0, 0, 0,
-//       0, 0, 1, 0.072,
-//       0, 0, 0, 1;
-//
-//   return T;
-// }
-
 Eigen::Matrix4f ControllerProcessor::T_world_to_dynamixel() {
+  Eigen::Matrix4f T = Eigen::Matrix4f::Identity();
+  T(0,3) = base_position_(0);
+  T(1,3) = base_position_(1);
+  T(2,3) = base_position_(2);
+
+  return T;
+}
+
 Eigen::Matrix4f ControllerProcessor::T_dynamixel_to_hebi(const double& a3) {
   double a3_offset = 45.0/360.0*2.0*M_PI;
 
