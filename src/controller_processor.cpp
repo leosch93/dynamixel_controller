@@ -656,7 +656,7 @@ Eigen::Matrix4f ControllerProcessor::T_clamp1_tip() {
 Eigen::Matrix4f ControllerProcessor::T_world_tip(const double& a3,const double& a2,const double& a1) {
 
   Eigen::Matrix4f T;
-  T = T_world_dynamixel_to_hebi(a3)*T_dynamixel_to_hebi_clamp2(a2)*T_clamp2_clamp1(a1)*T_clamp1_tip();
+  T = T_world_to_dynamixel()*T_dynamixel_to_hebi(a3)*T_dynamixel_to_hebi_clamp2(a2)*T_clamp2_clamp1(a1)*T_clamp1_tip();
   return T;
 
 }
@@ -734,12 +734,13 @@ Eigen::Vector3f ControllerProcessor::Rotate_vec_with_quaternion(const Eigen::Qua
 }
 
 Eigen::Matrix3f ControllerProcessor::Joint_to_position_jacobian(const double& input3, const double& input2, const double& input1) {
+  Eigen::Matrix4f T00 = T_world_to_dynamixel();
   Eigen::Matrix4f T01 = T_dynamixel_to_hebi(input3);
   Eigen::Matrix4f T12 = T_dynamixel_to_hebi_clamp2(input2);
   Eigen::Matrix4f T23 = T_clamp2_clamp1(input1);
   Eigen::Matrix4f T34 = T_clamp1_tip();
 
-  Eigen::Matrix4f TW1 = T01;
+  Eigen::Matrix4f TW1 = T00*T01;
   Eigen::Matrix4f TW2 = TW1*T12;
   Eigen::Matrix4f TW3 = TW2*T23;
   Eigen::Matrix4f TW4 = TW3*T34;
@@ -781,12 +782,13 @@ Eigen::Matrix3f ControllerProcessor::Joint_to_position_jacobian(const double& in
 }
 
 Eigen::Matrix3f ControllerProcessor::Joint_to_rotation_jacobian(const double& input3, const double& input2, const double& input1) {
+  Eigen::Matrix4f T00 = T_world_to_dynamixel();
   Eigen::Matrix4f T01 = T_dynamixel_to_hebi(input3);
   Eigen::Matrix4f T12 = T_dynamixel_to_hebi_clamp2(input2);
   Eigen::Matrix4f T23 = T_clamp2_clamp1(input1);
   Eigen::Matrix4f T34 = T_clamp1_tip();
 
-  Eigen::Matrix4f TW1 = T01;
+  Eigen::Matrix4f TW1 = T00*T01;
   Eigen::Matrix4f TW2 = TW1*T12;
   Eigen::Matrix4f TW3 = TW2*T23;
   Eigen::Matrix4f TW4 = TW3*T34;
