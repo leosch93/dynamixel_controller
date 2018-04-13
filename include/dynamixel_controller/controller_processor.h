@@ -94,6 +94,8 @@ static constexpr int kDefaultPubQueueSize_3 = 1;
  */
 class ControllerProcessor {
  public:
+   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   /**
    * \brief The Constructor.
    * @param [in] nh Ros NodeHandle.
