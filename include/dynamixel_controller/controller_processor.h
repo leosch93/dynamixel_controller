@@ -121,7 +121,7 @@ class ControllerProcessor {
   void CallbackEnc3(const geometry_msgs::PointStamped& pt_s_3);
 
   // Eigen::MatrixXf linspace(const float& a,const float& b,const float& n);
-  Eigen::Matrix4f T_world_dynamixel_to_hebi(const double& a3);
+  Eigen::Matrix4f T_dynamixel_to_hebi(const double& a3);
   Eigen::Matrix4f T_dynamixel_to_hebi_clamp2(const double& a2);
   Eigen::Matrix4f T_clamp2_clamp1(const double& a1);
   Eigen::Matrix4f T_clamp1_tip();

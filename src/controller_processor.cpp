@@ -556,7 +556,8 @@ void ControllerProcessor::ConfigCallback(
 //   return T;
 // }
 
-Eigen::Matrix4f ControllerProcessor::T_world_dynamixel_to_hebi(const double& a3) {
+Eigen::Matrix4f ControllerProcessor::T_world_to_dynamixel() {
+Eigen::Matrix4f ControllerProcessor::T_dynamixel_to_hebi(const double& a3) {
   double a3_offset = 45.0/360.0*2.0*M_PI;
 
   Eigen::Matrix4f T;
@@ -731,7 +732,7 @@ Eigen::Vector3f ControllerProcessor::Rotate_vec_with_quaternion(const Eigen::Qua
 }
 
 Eigen::Matrix3f ControllerProcessor::Joint_to_position_jacobian(const double& input3, const double& input2, const double& input1) {
-  Eigen::Matrix4f T01 = T_world_dynamixel_to_hebi(input3);
+  Eigen::Matrix4f T01 = T_dynamixel_to_hebi(input3);
   Eigen::Matrix4f T12 = T_dynamixel_to_hebi_clamp2(input2);
   Eigen::Matrix4f T23 = T_clamp2_clamp1(input1);
   Eigen::Matrix4f T34 = T_clamp1_tip();
@@ -778,7 +779,7 @@ Eigen::Matrix3f ControllerProcessor::Joint_to_position_jacobian(const double& in
 }
 
 Eigen::Matrix3f ControllerProcessor::Joint_to_rotation_jacobian(const double& input3, const double& input2, const double& input1) {
-  Eigen::Matrix4f T01 = T_world_dynamixel_to_hebi(input3);
+  Eigen::Matrix4f T01 = T_dynamixel_to_hebi(input3);
   Eigen::Matrix4f T12 = T_dynamixel_to_hebi_clamp2(input2);
   Eigen::Matrix4f T23 = T_clamp2_clamp1(input1);
   Eigen::Matrix4f T34 = T_clamp1_tip();
