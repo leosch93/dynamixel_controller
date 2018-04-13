@@ -665,6 +665,12 @@ Eigen::Matrix4f ControllerProcessor::T_world_tip(const double& a3,const double& 
 
 }
 
+Eigen::Matrix4f ControllerProcessor::T_dynamixel_to_tip(const double& a3,const double& a2,const double& a1) {
+  Eigen::Matrix4f T;
+  T = T_dynamixel_to_hebi(a3)*T_dynamixel_to_hebi_clamp2(a2)*T_clamp2_clamp1(a1)*T_clamp1_tip();
+  return T;
+}
+
 Eigen::Matrix3f ControllerProcessor::Joint_to_rotation_mat(const double& input3, const double& input2, const double& input1) {
   Eigen::Matrix4f T;
   T = T_world_tip(input3,input2,input1);
