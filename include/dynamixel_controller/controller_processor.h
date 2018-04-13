@@ -258,11 +258,7 @@ class ControllerProcessor {
   float t_est_1_{};
   float t_est_3_{};
 
-
-
-
-
-
+  Eigen::Vector3f base_position_;
 };
 
 } // namespace controller

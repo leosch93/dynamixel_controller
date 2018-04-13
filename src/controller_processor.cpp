@@ -1016,8 +1016,6 @@ float ControllerProcessor::median_n_3(const float& a,const float& b,const float&
 
 // Callack VICON
 void ControllerProcessor::Callback_tip_position(const geometry_msgs::TransformStamped& point_msg){
-
-
   float x = point_msg.transform.translation.x;
   float y = point_msg.transform.translation.y;
   float z = point_msg.transform.translation.z;
@@ -1027,6 +1025,9 @@ void ControllerProcessor::Callback_tip_position(const geometry_msgs::TransformSt
   float ik_initial_angle_1 = 100*2.0*M_PI/360.0;
 
   Eigen::Vector3f r_des(x,y,z);
+  base_position_(0) = x;
+  base_position_(1) = y;
+  base_position_(2) = z;
   ROS_INFO("Input coordinates to reach x = %f || y = %f || z = %f",r_des(0),r_des(1),r_des(2));
   Eigen::Vector3f r_init(ik_initial_angle_3,ik_initial_angle_2,ik_initial_angle_1);
   ROS_INFO("Input initial angles a1 = %f || a2 = %f || a3 = %f",r_init(0),r_init(1),r_init(2));
