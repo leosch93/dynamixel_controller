@@ -9,7 +9,8 @@ namespace controller {
 ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
                                          const ParameterBag& params_bag):
   nh_(nodehandle),
-  parameter_(params_bag) {
+  parameter_(params_bag),
+  base_position_(Eigen::Vector3f::Zero()) {
   ROS_DEBUG("Controller Processor started!");
 
   // Create ROS subscriber
@@ -29,7 +30,7 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
 
   sub_tip_pos_ = nh_.subscribe(parameter_.sub_rostopic_tip_position,
                           parameter_.queue_size_sub_rostopic_tip_position,
-                          &ControllerProcessor::Callback_tip_position,this);
+                          &ControllerProcessor::Callback_vicon,this);
 
 
 
@@ -88,7 +89,19 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
 // Callback for dynamic reconfigure
 void ControllerProcessor::ConfigCallback(
   dynamixel_controller::controllerConfig &config, uint32_t level) {
-  ROS_INFO("Reconfigure Request: %f %f %f %f %f %f %f %f %f %d %d %d %d %d %d %d %d %d %f %f %f %f %f",
+  ROS_INFO("Reconfigure Request: %d %d %f %f %f || %d %f %f %f || %f %f %f| %f %f %f| %f %f %f| %d %d %d %d| %d %d %d %d| %f %f %f %f %f",
+
+            config.bool_vicon,
+
+            config.bool_tip,
+            config.point_x_t,
+            config.point_y_t,
+            config.point_z_t,
+
+            config.bool_base,
+            config.point_x_b,
+            config.point_y_b,
+            config.point_z_b,
 
             config.double_param_1,
             config.double_param_2,
@@ -102,7 +115,6 @@ void ControllerProcessor::ConfigCallback(
             config.double_angle_init_2,
             config.double_angle_init_1,
 
-            config.bool_wand,
 
             config.bool_traj,
 
@@ -116,13 +128,26 @@ void ControllerProcessor::ConfigCallback(
             config.bool_start_positive,
             config.bool_start_negative,
             config.bool_start_both,
+
             config.double_param_inc,
             config.max_angle_pos,
             config.max_angle_neg,
             config.max_angle_both_pos,
             config.max_angle_both_neg);
 
-            is_wand_=config.bool_wand;
+
+            is_vicon_=config.bool_vicon;
+
+            is_tip_=config.bool_tip;
+            p_x_t_=config.point_x_t;
+            p_y_t_=config.point_y_t;
+            p_z_t_=config.point_z_t;
+
+            is_base_=config.bool_base;
+            p_x_b_=config.point_x_b;
+            p_y_b_=config.point_y_b;
+            p_z_b_=config.point_z_b;
+
             bool traj=config.bool_traj;
             bool forward_kin=config.bool_fk;
             bool inverse_kin=config.bool_ik;
@@ -1015,7 +1040,7 @@ float ControllerProcessor::median_n_3(const float& a,const float& b,const float&
 
 
 // Callack VICON
-void ControllerProcessor::Callback_tip_position(const geometry_msgs::TransformStamped& point_msg){
+void ControllerProcessor::Callback_vicon(const geometry_msgs::TransformStamped& point_msg){
   float x = point_msg.transform.translation.x;
   float y = point_msg.transform.translation.y;
   float z = point_msg.transform.translation.z;
@@ -1024,21 +1049,26 @@ void ControllerProcessor::Callback_tip_position(const geometry_msgs::TransformSt
   float ik_initial_angle_2 = -30*2.0*M_PI/360.0;
   float ik_initial_angle_1 = 100*2.0*M_PI/360.0;
 
-  bool is_tip_ = true;
+
   Eigen::Vector3f r_des;
+  // Fixed base
+  // Traking wand with markers
+  // Input dyn_rec base position, VICON tip position
   if (is_tip_) {
     r_des = Eigen::Vector3f(x,y,z);
 
-    // TODO: do not hardcode
-    base_position_(0) = 1.70;
-    base_position_(1) = 1.33;
-    base_position_(2) = 0.20;
-  } else {
+    base_position_(0) = p_x_b_;
+    base_position_(1) = p_y_b_;
+    base_position_(2) = p_z_b_;
+  }
+  if (is_base_) {
+    // Fixed tip
+    // Traking base with markers
+    // Input dyn_rec tip position, VICON base position
     Eigen::Matrix4f tip;
-    // TODO: do not hardcode
-    tip(0,3) = 2.45;
-    tip(1,3) = 1.98;
-    tip(2,3) = 0.52;
+    tip(0,3) = p_x_t_;
+    tip(1,3) = p_y_t_;
+    tip(2,3) = p_z_t_;
     r_des = Eigen::Vector3f(tip(0,3), tip(1,3), tip(2,3));
 
     base_position_(0) = x;
@@ -1083,7 +1113,7 @@ void ControllerProcessor::Callback_tip_position(const geometry_msgs::TransformSt
   ik_angle_2.data = q(1);
   ik_angle_1.data = q(2);
 
-  if(is_wand_) {
+  if(is_vicon_) {
     // Publish
     pub_cmd_3_.publish(ik_angle_3);
     pub_cmd_2_.publish(ik_angle_2);

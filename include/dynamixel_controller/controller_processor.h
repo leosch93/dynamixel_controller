@@ -117,7 +117,7 @@ class ControllerProcessor {
   // void CallbackDyn1(const dynamixel_msgs::JointState& dyn_state_1);
   void CallbackHebi2(const sensor_msgs::JointState& state_msg);
   // void CallbackDyn3(const dynamixel_msgs::JointState& dyn_state_3);
-  void Callback_tip_position(const geometry_msgs::TransformStamped& point_msg);
+  void Callback_vicon(const geometry_msgs::TransformStamped& point_msg);
 
   void CallbackEnc1(const geometry_msgs::PointStamped& pt_s_1);
   void CallbackEnc3(const geometry_msgs::PointStamped& pt_s_3);
@@ -221,7 +221,18 @@ class ControllerProcessor {
   // float dyn_3_state_val_2_{};
   // float dyn_3_state_val_3_{};
 
-  bool is_wand_{};
+  bool is_vicon_{};
+
+  bool is_tip_{};
+  float p_x_t_{};
+  float p_y_t_{};
+  float p_z_t_{};
+
+  bool is_base_{};
+  float p_x_b_{};
+  float p_y_b_{};
+  float p_z_b_{};
+
 
   bool only_once_enc_1_1_ = true;
   bool only_once_enc_1_2_ = true;
