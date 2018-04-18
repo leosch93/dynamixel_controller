@@ -265,11 +265,17 @@ class ControllerProcessor {
   float k_1_ = 0.444; //Nm/deg
   float k_3_ = 0.444; //Nm/deg
 
+  // Offset encoder
+  float offset_e1_ = 279.228516;
+  float offset_e3_ = 345.606;
+
+
   // Torque estimate
   float t_est_1_{};
   float t_est_3_{};
 
   Eigen::Vector3f base_position_;
+  Eigen::Quaternionf base_orienation_;
 };
 
 } // namespace controller

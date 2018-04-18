@@ -577,6 +577,18 @@ Eigen::Matrix4f ControllerProcessor::T_world_to_dynamixel() {
   T(0,3) = base_position_(0);
   T(1,3) = base_position_(1);
   T(2,3) = base_position_(2);
+  Eigen::Matrix3f rot_m = Quaternion_to_rotation_mat(base_orienation_);
+
+  T(0,0) = rot_m(0,0);
+  T(0,1) = rot_m(0,1);
+  T(0,2) = rot_m(0,2);
+  T(1,0) = rot_m(1,0);
+  T(1,1) = rot_m(1,1);
+  T(1,2) = rot_m(0,2);
+  T(2,0) = rot_m(2,0);
+  T(2,1) = rot_m(2,1);
+  T(2,2) = rot_m(2,2);
+
 
   return T;
 }
@@ -1077,6 +1089,10 @@ void ControllerProcessor::Callback_vicon(const geometry_msgs::TransformStamped& 
     base_position_(0) = x;
     base_position_(1) = y;
     base_position_(2) = z;
+    base_orienation_.w() = point_msg.transform.rotation.w;
+    base_orienation_.x() = point_msg.transform.rotation.x;
+    base_orienation_.y() = point_msg.transform.rotation.y;
+    base_orienation_.z() = point_msg.transform.rotation.z;
   }
 
   std::cout << "r_des: " << r_des.transpose() << std::endl;
@@ -1160,24 +1176,27 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
 
 
 
-  if (offset_calculated_1 == false){
-
-      if (only_once_enc_1_1_== true){
-        only_once_enc_1_1_ = false;
-      }
-      else if (only_once_enc_1_2_ == true){
-        only_once_enc_1_2_ = false;
-      }
-      else{
-        encoder_angle_1_initial_ =  median_val_e1;
-              offset_calculated_1 = true;
-      }
-    }
+  // if (offset_calculated_1 == false){
+  //
+  //     if (only_once_enc_1_1_== true){
+  //       only_once_enc_1_1_ = false;
+  //     }
+  //     else if (only_once_enc_1_2_ == true){
+  //       only_once_enc_1_2_ = false;
+  //     }
+  //     else{
+  //       encoder_angle_1_initial_ =  median_val_e1;
+  //             offset_calculated_1 = true;
+  //     }
+  //   }
 
 
 
   // Calculate angle difference
-  float angle_diff_a_1_ = encoder_angle_1_initial_-median_val_e1;
+  float angle_diff_a_1_ = offset_e1_-median_val_e1;
+  // ROS_INFO("Intitial angle encoder 1 [%f]",offset_e1_);
+  // ROS_INFO("Median value encoder [%f]",median_val_e1);
+
 
   // Calculate torque estimate
   t_est_1_ = angle_diff_a_1_*k_1_;
@@ -1185,7 +1204,6 @@ void ControllerProcessor::CallbackEnc1(const geometry_msgs::PointStamped &pt_s_1
 
   // Create message from value
   std_msgs::Float64 t_est_1_msg;
-  std_msgs::Float64 angle_1_deg_filtered_o_msg;
 
   t_est_1_msg.data = t_est_1_;
 
@@ -1243,26 +1261,27 @@ void ControllerProcessor::CallbackEnc3(const geometry_msgs::PointStamped &pt_s_3
 
 
 
-  if (offset_calculated_3 == false){
-
-    if (only_once_enc_3_1_== true){
-      only_once_enc_3_1_ = false;
-    }
-    else if (only_once_enc_3_2_ == true){
-      only_once_enc_3_2_ = false;
-    }
-    else{
-      encoder_angle_3_initial_ =  median_val_e3;
-            offset_calculated_3 = true;
-    }
-  }
+  // if (offset_calculated_3 == false){
+  //
+  //   if (only_once_enc_3_1_== true){
+  //     only_once_enc_3_1_ = false;
+  //   }
+  //   else if (only_once_enc_3_2_ == true){
+  //     only_once_enc_3_2_ = false;
+  //   }
+  //   else{
+  //     encoder_angle_3_initial_ =  median_val_e3;
+  //           offset_calculated_3 = true;
+  //   }
+  // }
 
 
 
 
 
   // Calculate angle difference
-  float angle_diff_a_3_ = encoder_angle_3_initial_-median_val_e3;
+  float angle_diff_a_3_ = offset_e3_-median_val_e3;
+  // ROS_INFO("Intitial angle encoder 3 [%f]",encoder_angle_3_initial_);
 
 
   // Calculate torque estimate
