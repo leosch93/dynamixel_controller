@@ -1,12 +1,8 @@
 # dynamixel_controller
-This repository contains the processing of the feedback of the encoder data.
-The node subscribes to the Input data form the Micro controller and processes these values
-The node then publishes the correcting commands to the Dynamixel servo.
-
-
+This repository contains the controller of the aerial manipulator.
 
 ## Parameters
-In the parameter file the different topics are specified
+In the parameter file the different topics are specified.
 
 ## Documentation
 The code is commented in a way such that the documentation can autonomously be generated using Doxygen:

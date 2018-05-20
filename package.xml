@@ -3,9 +3,15 @@
   <name>dynamixel_controller</name>
   <version>0.0.1</version>
   <description>
-    This package processes the values of the encoder and calculates an angle.
-    After filtering and offset correcting the signal, a force estimate is calculated.
-    In the end, the adjusting command values are send to the Dynamixel servo to exert a desired force.
+    This repository contains the controller of the aerial manipulator.
+    Two different inverse kinematics position control modes are implemented.
+    In the first control mode the base of the manipulator is fixed and the end effector follows the wand position.
+    In the second control mode the end effector position is set to a fixed position and the base position can be moved.
+
+    The torque feedback of the actuators are also implemented in this package.
+    The HEBI X5-4 actuator directly outputs the torque apllied to it.
+    The torque measurement of the Dynamixel-SEA is done by measuring the deflection of the encoder.
+    After filtering and offset correcting the signal, the torque acting on the actuator is estimated.
   </description>
 
   <maintainer email="lschai@student.ethz.ch">Leonard Schai</maintainer>
